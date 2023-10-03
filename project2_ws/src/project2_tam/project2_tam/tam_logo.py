@@ -89,7 +89,6 @@ my_points = [
 	Point(450,396),
 	Point(450,429),
 	Point(385,429),
-
 ]
 
 for point in my_points:

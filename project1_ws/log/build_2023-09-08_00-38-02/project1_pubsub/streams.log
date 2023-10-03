@@ -1,0 +1,35 @@
+[1.164s] Invoking command in '/home/samuel/ros2_humble/workspaces/project1_ws/src/project1_pubsub': PYTHONPATH=/home/samuel/ros2_humble/workspaces/project1_ws/build/project1_pubsub/prefix_override:/home/samuel/ros2_humble/workspaces/project1_ws/install/project1_pubsub/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project1_pubsub build --build-base /home/samuel/ros2_humble/workspaces/project1_ws/build/project1_pubsub/build install --record /home/samuel/ros2_humble/workspaces/project1_ws/build/project1_pubsub/install.log --single-version-externally-managed
+[1.581s] running egg_info
+[1.581s] creating ../../build/project1_pubsub/project1_pubsub.egg-info
+[1.582s] writing ../../build/project1_pubsub/project1_pubsub.egg-info/PKG-INFO
+[1.582s] writing dependency_links to ../../build/project1_pubsub/project1_pubsub.egg-info/dependency_links.txt
+[1.582s] writing entry points to ../../build/project1_pubsub/project1_pubsub.egg-info/entry_points.txt
+[1.582s] writing requirements to ../../build/project1_pubsub/project1_pubsub.egg-info/requires.txt
+[1.582s] writing top-level names to ../../build/project1_pubsub/project1_pubsub.egg-info/top_level.txt
+[1.582s] writing manifest file '../../build/project1_pubsub/project1_pubsub.egg-info/SOURCES.txt'
+[1.584s] reading manifest file '../../build/project1_pubsub/project1_pubsub.egg-info/SOURCES.txt'
+[1.584s] writing manifest file '../../build/project1_pubsub/project1_pubsub.egg-info/SOURCES.txt'
+[1.584s] running build
+[1.585s] running build_py
+[1.585s] creating /home/samuel/ros2_humble/workspaces/project1_ws/build/project1_pubsub/build
+[1.585s] creating /home/samuel/ros2_humble/workspaces/project1_ws/build/project1_pubsub/build/lib
+[1.585s] creating /home/samuel/ros2_humble/workspaces/project1_ws/build/project1_pubsub/build/lib/project1_pubsub
+[1.585s] copying project1_pubsub/__init__.py -> /home/samuel/ros2_humble/workspaces/project1_ws/build/project1_pubsub/build/lib/project1_pubsub
+[1.585s] running install
+[1.585s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.585s]   warnings.warn(
+[1.585s] running install_lib
+[1.586s] creating /home/samuel/ros2_humble/workspaces/project1_ws/install/project1_pubsub/lib/python3.10/site-packages/project1_pubsub
+[1.586s] copying /home/samuel/ros2_humble/workspaces/project1_ws/build/project1_pubsub/build/lib/project1_pubsub/__init__.py -> /home/samuel/ros2_humble/workspaces/project1_ws/install/project1_pubsub/lib/python3.10/site-packages/project1_pubsub
+[1.588s] byte-compiling /home/samuel/ros2_humble/workspaces/project1_ws/install/project1_pubsub/lib/python3.10/site-packages/project1_pubsub/__init__.py to __init__.cpython-310.pyc
+[1.588s] running install_data
+[1.589s] creating /home/samuel/ros2_humble/workspaces/project1_ws/install/project1_pubsub/share/ament_index
+[1.589s] creating /home/samuel/ros2_humble/workspaces/project1_ws/install/project1_pubsub/share/ament_index/resource_index
+[1.589s] creating /home/samuel/ros2_humble/workspaces/project1_ws/install/project1_pubsub/share/ament_index/resource_index/packages
+[1.589s] copying resource/project1_pubsub -> /home/samuel/ros2_humble/workspaces/project1_ws/install/project1_pubsub/share/ament_index/resource_index/packages
+[1.589s] copying package.xml -> /home/samuel/ros2_humble/workspaces/project1_ws/install/project1_pubsub/share/project1_pubsub
+[1.589s] running install_egg_info
+[1.592s] Copying ../../build/project1_pubsub/project1_pubsub.egg-info to /home/samuel/ros2_humble/workspaces/project1_ws/install/project1_pubsub/lib/python3.10/site-packages/project1_pubsub-0.0.0-py3.10.egg-info
+[1.593s] running install_scripts
+[1.628s] writing list of installed files to '/home/samuel/ros2_humble/workspaces/project1_ws/build/project1_pubsub/install.log'
+[1.650s] Invoked command in '/home/samuel/ros2_humble/workspaces/project1_ws/src/project1_pubsub' returned '0': PYTHONPATH=/home/samuel/ros2_humble/workspaces/project1_ws/build/project1_pubsub/prefix_override:/home/samuel/ros2_humble/workspaces/project1_ws/install/project1_pubsub/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project1_pubsub build --build-base /home/samuel/ros2_humble/workspaces/project1_ws/build/project1_pubsub/build install --record /home/samuel/ros2_humble/workspaces/project1_ws/build/project1_pubsub/install.log --single-version-externally-managed
