@@ -1,0 +1,35 @@
+[1.306s] Invoking command in '/home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam': PYTHONPATH=/home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/prefix_override:/home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base build/project2_tam build --build-base /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/build install --record /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/install.log --single-version-externally-managed
+[1.706s] running egg_info
+[1.707s] creating build/project2_tam/project2_tam.egg-info
+[1.707s] writing build/project2_tam/project2_tam.egg-info/PKG-INFO
+[1.707s] writing dependency_links to build/project2_tam/project2_tam.egg-info/dependency_links.txt
+[1.708s] writing entry points to build/project2_tam/project2_tam.egg-info/entry_points.txt
+[1.708s] writing requirements to build/project2_tam/project2_tam.egg-info/requires.txt
+[1.708s] writing top-level names to build/project2_tam/project2_tam.egg-info/top_level.txt
+[1.708s] writing manifest file 'build/project2_tam/project2_tam.egg-info/SOURCES.txt'
+[1.709s] reading manifest file 'build/project2_tam/project2_tam.egg-info/SOURCES.txt'
+[1.710s] writing manifest file 'build/project2_tam/project2_tam.egg-info/SOURCES.txt'
+[1.710s] running build
+[1.710s] running build_py
+[1.710s] creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/build
+[1.710s] creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/build/lib
+[1.711s] creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/build/lib/project2_tam
+[1.711s] copying project2_tam/__init__.py -> /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/build/lib/project2_tam
+[1.711s] running install
+[1.711s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.711s]   warnings.warn(
+[1.711s] running install_lib
+[1.712s] creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/lib/python3.10/site-packages/project2_tam
+[1.712s] copying /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/build/lib/project2_tam/__init__.py -> /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/lib/python3.10/site-packages/project2_tam
+[1.714s] byte-compiling /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/lib/python3.10/site-packages/project2_tam/__init__.py to __init__.cpython-310.pyc
+[1.714s] running install_data
+[1.715s] creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/share/ament_index
+[1.715s] creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/share/ament_index/resource_index
+[1.715s] creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/share/ament_index/resource_index/packages
+[1.715s] copying resource/project2_tam -> /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/share/ament_index/resource_index/packages
+[1.715s] copying package.xml -> /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/share/project2_tam
+[1.715s] running install_egg_info
+[1.718s] Copying build/project2_tam/project2_tam.egg-info to /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/lib/python3.10/site-packages/project2_tam-0.0.0-py3.10.egg-info
+[1.719s] running install_scripts
+[1.756s] writing list of installed files to '/home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/install.log'
+[1.775s] Invoked command in '/home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam' returned '0': PYTHONPATH=/home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/prefix_override:/home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base build/project2_tam build --build-base /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/build install --record /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/install.log --single-version-externally-managed

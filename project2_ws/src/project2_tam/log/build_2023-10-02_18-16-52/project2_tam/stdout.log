@@ -1,0 +1,31 @@
+running egg_info
+creating build/project2_tam/project2_tam.egg-info
+writing build/project2_tam/project2_tam.egg-info/PKG-INFO
+writing dependency_links to build/project2_tam/project2_tam.egg-info/dependency_links.txt
+writing entry points to build/project2_tam/project2_tam.egg-info/entry_points.txt
+writing requirements to build/project2_tam/project2_tam.egg-info/requires.txt
+writing top-level names to build/project2_tam/project2_tam.egg-info/top_level.txt
+writing manifest file 'build/project2_tam/project2_tam.egg-info/SOURCES.txt'
+reading manifest file 'build/project2_tam/project2_tam.egg-info/SOURCES.txt'
+writing manifest file 'build/project2_tam/project2_tam.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/build
+creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/build/lib
+creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/build/lib/project2_tam
+copying project2_tam/__init__.py -> /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/build/lib/project2_tam
+running install
+running install_lib
+creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/lib/python3.10/site-packages/project2_tam
+copying /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/build/lib/project2_tam/__init__.py -> /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/lib/python3.10/site-packages/project2_tam
+byte-compiling /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/lib/python3.10/site-packages/project2_tam/__init__.py to __init__.cpython-310.pyc
+running install_data
+creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/share/ament_index
+creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/share/ament_index/resource_index
+creating /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/share/ament_index/resource_index/packages
+copying resource/project2_tam -> /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/share/ament_index/resource_index/packages
+copying package.xml -> /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/share/project2_tam
+running install_egg_info
+Copying build/project2_tam/project2_tam.egg-info to /home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/install/project2_tam/lib/python3.10/site-packages/project2_tam-0.0.0-py3.10.egg-info
+running install_scripts
+writing list of installed files to '/home/samuel/ros2_humble/workspaces/project2_ws/src/project2_tam/build/project2_tam/install.log'
