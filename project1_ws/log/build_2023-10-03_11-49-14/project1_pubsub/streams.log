@@ -1,0 +1,23 @@
+[1.213s] Invoking command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/src/project1_pubsub': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/build/project1_pubsub/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/install/project1_pubsub/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project1_pubsub build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/build/project1_pubsub/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/build/project1_pubsub/install.log --single-version-externally-managed
+[1.600s] running egg_info
+[1.601s] writing ../../build/project1_pubsub/project1_pubsub.egg-info/PKG-INFO
+[1.601s] writing dependency_links to ../../build/project1_pubsub/project1_pubsub.egg-info/dependency_links.txt
+[1.601s] writing entry points to ../../build/project1_pubsub/project1_pubsub.egg-info/entry_points.txt
+[1.602s] writing requirements to ../../build/project1_pubsub/project1_pubsub.egg-info/requires.txt
+[1.602s] writing top-level names to ../../build/project1_pubsub/project1_pubsub.egg-info/top_level.txt
+[1.603s] reading manifest file '../../build/project1_pubsub/project1_pubsub.egg-info/SOURCES.txt'
+[1.604s] writing manifest file '../../build/project1_pubsub/project1_pubsub.egg-info/SOURCES.txt'
+[1.604s] running build
+[1.604s] running build_py
+[1.604s] running install
+[1.604s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.604s]   warnings.warn(
+[1.605s] running install_lib
+[1.607s] running install_data
+[1.607s] running install_egg_info
+[1.610s] removing '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/install/project1_pubsub/lib/python3.10/site-packages/project1_pubsub-0.0.0-py3.10.egg-info' (and everything under it)
+[1.610s] Copying ../../build/project1_pubsub/project1_pubsub.egg-info to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/install/project1_pubsub/lib/python3.10/site-packages/project1_pubsub-0.0.0-py3.10.egg-info
+[1.611s] running install_scripts
+[1.643s] Installing controller script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/install/project1_pubsub/lib/project1_pubsub
+[1.644s] writing list of installed files to '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/build/project1_pubsub/install.log'
+[1.664s] Invoked command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/src/project1_pubsub' returned '0': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/build/project1_pubsub/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/install/project1_pubsub/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project1_pubsub build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/build/project1_pubsub/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project1_ws/build/project1_pubsub/install.log --single-version-externally-managed

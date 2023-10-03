@@ -1,0 +1,7 @@
+/usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+  warnings.warn(
+  File "/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/python3.10/site-packages/project2_tam/draw_tam.py", line 36
+    def set_parameters(self, *values, *param_names):
+                                      ^
+SyntaxError: invalid syntax
+
