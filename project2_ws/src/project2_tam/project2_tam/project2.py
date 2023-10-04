@@ -11,28 +11,42 @@ import os
 import project2_tam.tam_logo as tam
 
 class TurtleTeleporter(Node):
-	def __init__(self, coordinates, segments, num_turtles):
-		super().__init__('turtle_teleporter')
-		self.coordinates = coordinates ##### REMOVE #####
-		self.segments = segments # Lines to draw
-		self.num_turtles = num_turtles # Count the turtles
-		self.turtle_names = [f'turtle{i}' for i in range(1, self.num_turtles + 1)] # Name the turtles 
+	def __init__(self, node_name):
+		super().__init__(node_name)
+		self.control_node = rclpy.create_node('turtle_control')
+		self.coordinates = tam.my_points
+		self.segments = tam.my_lines
+		self.num_turtles = self.declare_parameter('num_turtles', 4).value
 
-		self.client_clear = self.create_client(Empty, '/clear')  # Client for /clear service
-		self.client_teleport = self.create_client(TeleportAbsolute, '/turtle1/teleport_absolute') # Client for teleport service
+		self.turtle_names = [f'turtle{i}' for i in range(1, self.num_turtles + 1)] # Name the turtles 
 
 		self.initialize_simulator() # Prep turtlesim and turtles
 
-		# Create publishers for cmd_vel topics of each turtle
-		self.turtle_publishers = {}
+		# Initialize all turtles with publishers and subscribers
+		self.SetPen_clients = {}
+		self.Twist_publishers = {}
+		self.Pose_subscriptions = {}
+		self.Teleport_clients = {} ##### REMOVE #####
+		self.turtle_pose = None
 		for turtle_name in self.turtle_names:
-			self.turtle_publishers[turtle_name] = self.create_publisher(
-				Twist, f'/{turtle_name}/cmd_vel', 10
-				)
+			self.spawn_turtle(turtle_name) # Spawn turtle
 
-		self.teleport_turtle()
+			self.SetPen_clients[turtle_name]     = self.create_client(SetPen, f"/{turtle_name}/set_pen")
+			self.Twist_publishers[turtle_name]   = self.create_publisher(Twist, f'/{turtle_name}/cmd_vel', 10)
+			self.Pose_subscriptions[turtle_name] = self.control_node.create_subscription(Pose, f'/{turtle_name}/pose', self.pose_callback, 10)
+			self.Teleport_clients[turtle_name]   = self.create_client(TeleportAbsolute, f'/{turtle_name}/teleport_absolute') ##### REMOVE #####
 
-	def initialize_simulator(self):
+			self.set_pen_white(turtle_name)
+
+		for turtle_name in self.turtle_names:
+			self.teleport_turtle(turtle_name)
+			self.initialize_simulator()
+
+	def pose_callback(self, msg):
+		self.turtle_pose = msg
+
+	def initialize_simulator(self): # Clear and set Background
+		self.client_clear = self.create_client(Empty, '/clear')  # Client for /clear service
 		self.client_clear.wait_for_service()
 		
 		req_clear = Empty.Request()
@@ -41,35 +55,28 @@ class TurtleTeleporter(Node):
 
 		path_to_params = "~/ros2_humble/CSCE452-samuel.fafel/project2_ws/src/project2_tam/project2_tam/background_params.txt"
 		os.system(f"ros2 param load /turtlesim {path_to_params}") # Set background color to Aggie Maroon
-		self.spawn_turtles() # Spawn Turtles
-		for turtle in self.turtle_names:
-			self.set_pen(turtle) # Set turtles' pen colors to white
 		
-	def spawn_turtles(self):
-		for name in self.turtle_names:
-			self.client_spawn = self.create_client(Spawn, 'spawn')
-			req_spawn = Spawn.Request()
-			req_spawn.name = name
-			req_spawn.x = 5.544445
-			req_spawn.y = 5.544445
-			req_spawn.theta = 0.0
-			self.client_spawn.call_async(req_spawn)
+	def spawn_turtle(self, turtle_name): # Spawn a turtle in the center
+		self.client_spawn = self.create_client(Spawn, 'spawn')
+		req_spawn = Spawn.Request()
+		req_spawn.name = turtle_name
+		req_spawn.x = 5.544445
+		req_spawn.y = 5.544445
+		req_spawn.theta = 0.0
+		self.client_spawn.call_async(req_spawn)
 
-	def set_pen(self, turtle_name):
-		# Set the pen color
-		self.client_set_pen = self.create_client(SetPen, f"/{turtle_name}/set_pen") # Client for set_pen service
-		self.client_set_pen.wait_for_service()
+	def set_pen_white(self, turtle_name, on_off=True): # Set the pen color to white
+		self.SetPen_clients[turtle_name].wait_for_service()
 		req_pen = SetPen.Request()
 		req_pen.r = 255
 		req_pen.g = 255
 		req_pen.b = 255
 		req_pen.width = 2
-		req_pen.off = 0
-		self.client_set_pen.call_async(req_pen)
-        
-	def teleport_turtle(self):
-		self.client_teleport.wait_for_service()
-		
+		req_pen.off = not on_off
+		self.SetPen_clients[turtle_name].call_async(req_pen)
+
+	def teleport_turtle(self, turtle_name): ##### REMOVE #####
+		self.Teleport_clients[turtle_name].wait_for_service()
 		for coord in self.coordinates:
 			req = TeleportAbsolute.Request()
 			req.x = coord.x
@@ -77,31 +84,25 @@ class TurtleTeleporter(Node):
 			req.theta = 0.0
 
 			self.get_logger().info(f"Teleporting turtle to ({req.x}, {req.y})")
-			future = self.client_teleport.call_async(req)
+			future = self.Teleport_clients[turtle_name].call_async(req)
 			rclpy.spin_until_future_complete(self, future)
-			
-			if future.result() is None:
-				self.get_logger().error("Failed to call service teleport_absolute")
-		self.remove_turtles()
+		self.remove_turtle(turtle_name)
 				
-	def remove_turtles(self):
+	def remove_turtle(self, turtle_name): # Kill a turtle :(
 		self.client_kill = self.create_client(Kill, "/kill") # Client for kill service
-		for name in self.turtle_names:
-			self.client_kill.wait_for_service()
-			req_kill = Kill.Request()
-			req_kill.name = name
-			future_kill = self.client_kill.call_async(req_kill)
-			rclpy.spin_until_future_complete(self, future_kill)
+		self.client_kill.wait_for_service()
+		req_kill = Kill.Request()
+		req_kill.name = turtle_name
+		future_kill = self.client_kill.call_async(req_kill)
+		rclpy.spin_until_future_complete(self, future_kill)
 		
-def main():
-	rclpy.init()
+def main(args=None):
+	rclpy.init(args=args)
 
 	# List of coordinates to teleport to
-	coordinates = tam.my_points
-	segments = tam.my_lines
-	num_turtles = 4
+	node_name = "turtle_teleporter"
 	
-	teleported = TurtleTeleporter(coordinates, segments, num_turtles)
+	teleported = TurtleTeleporter(node_name)
 	#rclpy.spin(teleported)
 
 	teleported.destroy_node()

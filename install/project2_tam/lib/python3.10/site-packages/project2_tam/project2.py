@@ -7,9 +7,8 @@ from turtlesim.srv import Kill
 from std_srvs.srv import Empty
 from turtlesim.msg import Pose
 from geometry_msgs.msg import Twist
-import math
 import os
-import tam_logo as tam
+import project2_tam.tam_logo as tam
 
 class TurtleTeleporter(Node):
 	def __init__(self, coordinates, segments, num_turtles):
@@ -31,7 +30,7 @@ class TurtleTeleporter(Node):
 				Twist, f'/{turtle_name}/cmd_vel', 10
 				)
 
-		self.teleport_turtle()
+		self.teleport_turtle("turtle1")
 
 	def initialize_simulator(self):
 		self.client_clear.wait_for_service()
@@ -40,7 +39,8 @@ class TurtleTeleporter(Node):
 		self.client_clear.call_async(req_clear) # Clear Turtlesim
 		self.get_logger().info('Simulator cleared.')
 
-		os.system("ros2 param load /turtlesim background_params.txt") # Set background color to Aggie Maroon
+		path_to_params = "~/ros2_humble/CSCE452-samuel.fafel/project2_ws/src/project2_tam/project2_tam/background_params.txt"
+		os.system(f"ros2 param load /turtlesim {path_to_params}") # Set background color to Aggie Maroon
 		self.spawn_turtles() # Spawn Turtles
 		for turtle in self.turtle_names:
 			self.set_pen(turtle) # Set turtles' pen colors to white
@@ -66,8 +66,15 @@ class TurtleTeleporter(Node):
 		req_pen.width = 2
 		req_pen.off = 0
 		self.client_set_pen.call_async(req_pen)
+
+	def toggle_pen(self, turtle_name, on_off):
+		self.client_set_pen = self.create_client(SetPen, f"/{turtle_name}/set_pen") # Client for set_pen service
+		self.client_set_pen.wait_for_service()
+        req_toggle = SetPen.Request()
+        req_toggle.off = not on_off # True = On, # False = Off
+        self.srv_set_pen.call_async(req_toggle)
         
-	def teleport_turtle(self):
+	def teleport_turtle(self, turtle_name):
 		self.client_teleport.wait_for_service()
 		
 		for coord in self.coordinates:
@@ -75,6 +82,9 @@ class TurtleTeleporter(Node):
 			req.x = coord.x
 			req.y = coord.y
 			req.theta = 0.0
+
+			if req.x == 181 and req.y == 342:
+				self.toggle_pen(self, turtle_name, False)
 
 			self.get_logger().info(f"Teleporting turtle to ({req.x}, {req.y})")
 			future = self.client_teleport.call_async(req)
@@ -106,7 +116,6 @@ def main():
 
 	teleported.destroy_node()
 	rclpy.shutdown()
-
 
 if __name__ == '__main__':
 	main()

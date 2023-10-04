@@ -11,6 +11,7 @@ setup.py
 project2_tam/__init__.py
 project2_tam/background.py
 project2_tam/draw_tam.py
+project2_tam/movement.py
 project2_tam/project2.py
 project2_tam/tam_logo.py
 resource/project2_tam

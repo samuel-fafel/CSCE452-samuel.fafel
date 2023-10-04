@@ -168,16 +168,15 @@ my_lines = [
 	LineSegment(my_points[65], my_points[66]), # 62
 ]
 
-if __name__ == '__main__':
+def main():
 	# Example usage:
 	start_point = Point(1, 2)
 	end_point = Point(3, 4)
 	segment = LineSegment(start_point, end_point)
 	print(segment)	
-	
-	for p in range(len(my_points)-1):
-		segment = LineSegment(my_points[p], my_points[p+1])
-		print(segment)
+
+if __name__ == '__main__':
+	main()
 		
 	
 	

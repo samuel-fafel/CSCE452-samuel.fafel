@@ -22,6 +22,9 @@ _colcon_prefix_chain_bash_source_script() {
 COLCON_CURRENT_PREFIX="/home/samuel/ros2_humble/install"
 _colcon_prefix_chain_bash_source_script "$COLCON_CURRENT_PREFIX/local_setup.bash"
 # setting COLCON_CURRENT_PREFIX avoids determining the prefix in the sourced script
+COLCON_CURRENT_PREFIX="/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/src/project2_tam/project2_tam/install"
+_colcon_prefix_chain_bash_source_script "$COLCON_CURRENT_PREFIX/local_setup.bash"
+# setting COLCON_CURRENT_PREFIX avoids determining the prefix in the sourced script
 COLCON_CURRENT_PREFIX="/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install"
 _colcon_prefix_chain_bash_source_script "$COLCON_CURRENT_PREFIX/local_setup.bash"
 

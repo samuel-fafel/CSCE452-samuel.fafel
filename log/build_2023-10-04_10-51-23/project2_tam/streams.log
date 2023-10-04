@@ -1,0 +1,38 @@
+[1.930s] Invoking command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/src/project2_tam': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../../build/project2_tam build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/install.log --single-version-externally-managed
+[2.340s] running egg_info
+[2.341s] writing ../../../build/project2_tam/project2_tam.egg-info/PKG-INFO
+[2.341s] writing dependency_links to ../../../build/project2_tam/project2_tam.egg-info/dependency_links.txt
+[2.341s] writing entry points to ../../../build/project2_tam/project2_tam.egg-info/entry_points.txt
+[2.341s] writing requirements to ../../../build/project2_tam/project2_tam.egg-info/requires.txt
+[2.341s] writing top-level names to ../../../build/project2_tam/project2_tam.egg-info/top_level.txt
+[2.343s] reading manifest file '../../../build/project2_tam/project2_tam.egg-info/SOURCES.txt'
+[2.343s] writing manifest file '../../../build/project2_tam/project2_tam.egg-info/SOURCES.txt'
+[2.344s] running build
+[2.344s] running build_py
+[2.344s] copying project2_tam/tam_logo.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/build/lib/project2_tam
+[2.344s] copying project2_tam/draw_tam.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/build/lib/project2_tam
+[2.344s] copying project2_tam/movement.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/build/lib/project2_tam
+[2.344s] copying project2_tam/project2.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/build/lib/project2_tam
+[2.345s] running install
+[2.345s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[2.345s]   warnings.warn(
+[2.345s] running install_lib
+[2.346s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/build/lib/project2_tam/tam_logo.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/python3.10/site-packages/project2_tam
+[2.346s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/build/lib/project2_tam/draw_tam.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/python3.10/site-packages/project2_tam
+[2.346s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/build/lib/project2_tam/movement.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/python3.10/site-packages/project2_tam
+[2.346s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/build/lib/project2_tam/project2.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/python3.10/site-packages/project2_tam
+[2.349s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/python3.10/site-packages/project2_tam/tam_logo.py to tam_logo.cpython-310.pyc
+[2.351s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/python3.10/site-packages/project2_tam/draw_tam.py to draw_tam.cpython-310.pyc
+[2.352s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/python3.10/site-packages/project2_tam/movement.py to movement.cpython-310.pyc
+[2.352s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/python3.10/site-packages/project2_tam/project2.py to project2.cpython-310.pyc
+[2.353s] Sorry: TabError: inconsistent use of tabs and spaces in indentation (project2.py, line 73)
+[2.353s] running install_data
+[2.353s] running install_egg_info
+[2.356s] removing '/home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/python3.10/site-packages/project2_tam-0.0.0-py3.10.egg-info' (and everything under it)
+[2.357s] Copying ../../../build/project2_tam/project2_tam.egg-info to /home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/python3.10/site-packages/project2_tam-0.0.0-py3.10.egg-info
+[2.358s] running install_scripts
+[2.394s] Installing background script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/project2_tam
+[2.394s] Installing project2 script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/project2_tam
+[2.394s] Installing tam_logo script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/project2_tam
+[2.394s] writing list of installed files to '/home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/install.log'
+[2.413s] Invoked command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/src/project2_tam' returned '0': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/install/project2_tam/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../../build/project2_tam build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/build/project2_tam/install.log --single-version-externally-managed
