@@ -119,7 +119,8 @@ class DrawTAM(Node):
 		target_y = point.y
 		
 		# Calculate the angle to rotate towards the target point
-		angle_to_target = atan2(sin(target_y - turtle_pose.y), cos(target_x - turtle_pose.x))
+		angle_to_target = atan2(sin(target_y - turtle_pose.y), cos(target_x - turtle_pose.x)) - pi/2
+		if (target_y > turtle_pose.y): angle_to_target += pi
 		angle_diff = angle_to_target - turtle_pose.theta
 
 		print("------ Rotating ------")
