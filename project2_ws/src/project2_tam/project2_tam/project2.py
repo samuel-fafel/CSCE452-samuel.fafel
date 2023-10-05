@@ -10,6 +10,7 @@ from geometry_msgs.msg import Twist
 from math import atan2, cos, sin, degrees, sqrt, pi
 import os
 import project2_tam.tam_logo as tam
+from steering import euclidean_distance, linear_vel, steering_angle, angular_vel
 
 class DrawTAM(Node):
 	def __init__(self, node_name):
@@ -20,6 +21,8 @@ class DrawTAM(Node):
 		
 		self.num_turtles = self.declare_parameter('num_turtles', 1).value
 		self.turtle_names = [f'turtle{i}' for i in range(1, self.num_turtles + 1)] # Name the turtles 
+
+		self.rate = self.control_node.create_rate(10)
 
 		self.initialize_simulator() # Prep turtlesim
 
@@ -32,20 +35,23 @@ class DrawTAM(Node):
 		for turtle_name in self.turtle_names:
 			self.spawn_turtle(turtle_name) # Spawn turtle
 
-			self.SetPen_Clients[turtle_name]     = self.create_client(SetPen, f"/{turtle_name}/set_pen")
+			self.SetPen_Clients[turtle_name]	 = self.create_client(SetPen, f"/{turtle_name}/set_pen")
 			self.Twist_Publishers[turtle_name]   = self.create_publisher(Twist, f'/{turtle_name}/cmd_vel', 10)
 			self.Pose_Subscriptions[turtle_name] = self.control_node.create_subscription(Pose,f'/{turtle_name}/pose',
-        											lambda msg, name=turtle_name: self.pose_callback(name, msg), 10)
+													lambda msg, name=turtle_name: self.pose_callback(name, msg), 10)
 			self.Teleport_Clients[turtle_name]   = self.create_client(TeleportAbsolute, f'/{turtle_name}/teleport_absolute') ##### REMOVE #####
 
 			self.set_pen_white(turtle_name)
 
 		for turtle_name in self.turtle_names:
 			print(self.segments[0])
-			self.rotate_turtle(turtle_name, self.Turtle_Poses[turtle_name], self.segments[0].start)
-			self.move_to_target(turtle_name, self.Turtle_Poses[turtle_name], self.segments[0].start)
-			self.rotate_turtle(turtle_name, self.Turtle_Poses[turtle_name], self.segments[0].end)
-			self.move_to_target(turtle_name, self.Turtle_Poses[turtle_name], self.segments[0].end)
+			#self.rotate_turtle(turtle_name, self.Turtle_Poses[turtle_name], self.segments[0].start)
+			#self.move_to_target(turtle_name, self.Turtle_Poses[turtle_name], self.segments[0].start)
+			#self.rotate_turtle(turtle_name, self.Turtle_Poses[turtle_name], self.segments[0].end)
+			#self.move_to_target(turtle_name, self.Turtle_Poses[turtle_name], self.segments[0].end)
+
+			self.draw_logo_one_turtle(turtle_name, self.Turtle_Poses[turtle_name])
+			self.draw_logo_one_turtle(turtle_name, self.Turtle_Poses[turtle_name])
 
 			#self.draw_logo_one_turtle(turtle_name, self.Turtle_Poses[turtle_name])
 			#self.teleport_turtle(turtle_name)
@@ -114,66 +120,58 @@ class DrawTAM(Node):
 			self.rotate_turtle(turtle_name, turtle_pose, segment.end)
 			self.move_to_target(turtle_name, turtle_pose, segment.end)
 
-	def rotate_turtle(self, turtle_name, turtle_pose, point):
-		target_x = point.x
-		target_y = point.y
-		
+	def rotate_turtle(self, turtle_name, turtle_pose, point, tolerance=0.01):
 		# Calculate the angle to rotate towards the target point
-		angle_to_target = atan2(sin(target_y - turtle_pose.y), cos(target_x - turtle_pose.x)) - pi/2
-		if (target_y > turtle_pose.y): angle_to_target += pi
+		angle_to_target = steering_angle(point, turtle_pose)
+		if (point.y > turtle_pose.y): angle_to_target += pi
 		angle_diff = angle_to_target - turtle_pose.theta
 
 		print("------ Rotating ------")
-		print(f"Target: ({target_x},{target_y})")
+		print(f"Target: ({point.x},{point.y})")
 		print(f"Turtle: ({turtle_pose.x},{turtle_pose.y}, {turtle_pose.theta})")
 		print(f"{angle_diff} = {angle_to_target} - {turtle_pose.theta}")
 
+		twist_msg = Twist()
 		# Rotate the turtle towards the target point
-		while abs(angle_diff) > 0.01:
+		while abs(steering_angle(point, turtle_pose) - turtle_pose.theta) > tolerance:
 			# Change angle
-			twist_msg = Twist()
-			twist_msg.angular.z = angle_diff
+			twist_msg.linear.x = 0.0
+			twist_msg.angular.z = angular_vel(point, turtle_pose, 1)
 			self.Twist_Publishers[turtle_name].publish(twist_msg)
 			rclpy.spin_once(self.control_node)
 			
-			# Get new angle
-			angle_diff = angle_to_target - turtle_pose.theta
+			# Get new pose
 			turtle_pose = self.Turtle_Poses[turtle_name]
-
-		# Stop rotations
+		
+		# Stop rotating
 		twist_msg = Twist()
 		twist_msg.angular.z = 0.0
 		self.Twist_Publishers[turtle_name].publish(twist_msg)
 		rclpy.spin_once(self.control_node)
 
 		print("------ Stopping ------")
-		print(f"Target: ({target_x},{target_y})")
+		print(f"Target: ({point.x},{point.y})")
 		print(f"Turtle: ({turtle_pose.x},{turtle_pose.y}, {turtle_pose.theta})")
 		print(f"Angle Diff = {angle_diff} = {angle_to_target} - {turtle_pose.theta}")
 		print("----------------------")
 
-	def move_to_target(self, turtle_name, turtle_pose, point):
-		target_x = point.x
-		target_y = point.y
-
-		# Calculate the distance to the target point
-		distance_to_target = sqrt((target_x - turtle_pose.x) ** 2 + (target_y - turtle_pose.y) ** 2)
-
+	def move_to_target(self, turtle_name, turtle_pose, point, tolerance=0.1):
 		print("------ Swimming ------")
-		print(f"Target: ({target_x},{target_y})")
+		print(f"Target: ({point.x},{point.y})")
 		print(f"Turtle: ({turtle_pose.x},{turtle_pose.y}, {turtle_pose.theta})")
-		print(f"Distance to Target = {distance_to_target}")
+		#print(f"Distance to Target = {distance_to_target}")
 
 		# Move the turtle to the target point
-		while distance_to_target > 0.5:
+		while euclidean_distance(point, turtle_pose) >= tolerance:
 			twist_msg = Twist()
-			twist_msg.linear.x = distance_to_target
+			twist_msg.linear.x = linear_vel(point, turtle_pose, 1)
 			self.Twist_Publishers[turtle_name].publish(twist_msg)
 			rclpy.spin_once(self.control_node)
 
-			distance_to_target = sqrt((target_x - turtle_pose.x) ** 2 + (target_y - turtle_pose.y) ** 2)
 			turtle_pose = self.Turtle_Poses[turtle_name]
 		
+		#self.rate.sleep()
+	
 		# Stop movement
 		twist_msg = Twist()
 		twist_msg.linear.x = 0.0
@@ -181,11 +179,11 @@ class DrawTAM(Node):
 		rclpy.spin_once(self.control_node)
 
 		print("------ Stopping ------")
-		print(f"Target: ({target_x},{target_y})")
+		print(f"Target: ({point.x},{point.y})")
 		print(f"Turtle: ({turtle_pose.x},{turtle_pose.y}, {turtle_pose.theta})")
-		print(f"{distance_to_target}")
+		#print(f"{distance_to_target}")
 		print("----------------------")
-				
+	
 	def remove_turtle(self, turtle_name): # Kill a turtle :(
 		self.client_kill = self.create_client(Kill, "/kill") # Client for kill service
 		self.client_kill.wait_for_service()
