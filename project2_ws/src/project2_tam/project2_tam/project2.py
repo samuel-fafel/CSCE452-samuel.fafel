@@ -7,43 +7,54 @@ from turtlesim.srv import Kill
 from std_srvs.srv import Empty
 from turtlesim.msg import Pose
 from geometry_msgs.msg import Twist
+from math import atan2, cos, sin, degrees, sqrt, pi
 import os
 import project2_tam.tam_logo as tam
 
-class TurtleTeleporter(Node):
+class DrawTAM(Node):
 	def __init__(self, node_name):
 		super().__init__(node_name)
 		self.control_node = rclpy.create_node('turtle_control')
-		self.coordinates = tam.my_points
+		self.coordinates = tam.my_points ##### REMOVE #####
 		self.segments = tam.my_lines
-		self.num_turtles = self.declare_parameter('num_turtles', 4).value
-
+		
+		self.num_turtles = self.declare_parameter('num_turtles', 1).value
 		self.turtle_names = [f'turtle{i}' for i in range(1, self.num_turtles + 1)] # Name the turtles 
 
-		self.initialize_simulator() # Prep turtlesim and turtles
+		self.initialize_simulator() # Prep turtlesim
 
 		# Initialize all turtles with publishers and subscribers
-		self.SetPen_clients = {}
-		self.Twist_publishers = {}
-		self.Pose_subscriptions = {}
-		self.Teleport_clients = {} ##### REMOVE #####
-		self.turtle_pose = None
+		self.SetPen_Clients = {}
+		self.Twist_Publishers = {}
+		self.Pose_Subscriptions = {}
+		self.Teleport_Clients = {} ##### REMOVE #####
+		self.Turtle_Poses = {}
 		for turtle_name in self.turtle_names:
 			self.spawn_turtle(turtle_name) # Spawn turtle
 
-			self.SetPen_clients[turtle_name]     = self.create_client(SetPen, f"/{turtle_name}/set_pen")
-			self.Twist_publishers[turtle_name]   = self.create_publisher(Twist, f'/{turtle_name}/cmd_vel', 10)
-			self.Pose_subscriptions[turtle_name] = self.control_node.create_subscription(Pose, f'/{turtle_name}/pose', self.pose_callback, 10)
-			self.Teleport_clients[turtle_name]   = self.create_client(TeleportAbsolute, f'/{turtle_name}/teleport_absolute') ##### REMOVE #####
+			self.SetPen_Clients[turtle_name]     = self.create_client(SetPen, f"/{turtle_name}/set_pen")
+			self.Twist_Publishers[turtle_name]   = self.create_publisher(Twist, f'/{turtle_name}/cmd_vel', 10)
+			self.Pose_Subscriptions[turtle_name] = self.control_node.create_subscription(Pose,f'/{turtle_name}/pose',
+        											lambda msg, name=turtle_name: self.pose_callback(name, msg), 10)
+			self.Teleport_Clients[turtle_name]   = self.create_client(TeleportAbsolute, f'/{turtle_name}/teleport_absolute') ##### REMOVE #####
 
 			self.set_pen_white(turtle_name)
 
 		for turtle_name in self.turtle_names:
-			self.teleport_turtle(turtle_name)
+			print(self.segments[0])
+			self.rotate_turtle(turtle_name, self.Turtle_Poses[turtle_name], self.segments[0].start)
+			self.move_to_target(turtle_name, self.Turtle_Poses[turtle_name], self.segments[0].start)
+			self.rotate_turtle(turtle_name, self.Turtle_Poses[turtle_name], self.segments[0].end)
+			self.move_to_target(turtle_name, self.Turtle_Poses[turtle_name], self.segments[0].end)
+
+			#self.draw_logo_one_turtle(turtle_name, self.Turtle_Poses[turtle_name])
+			#self.teleport_turtle(turtle_name)
 			self.initialize_simulator()
 
-	def pose_callback(self, msg):
-		self.turtle_pose = msg
+	def pose_callback(self, turtle_name, msg):
+		self.Turtle_Poses[turtle_name].x = msg.x
+		self.Turtle_Poses[turtle_name].y = msg.y
+		self.Turtle_Poses[turtle_name].theta = msg.theta
 
 	def initialize_simulator(self): # Clear and set Background
 		self.client_clear = self.create_client(Empty, '/clear')  # Client for /clear service
@@ -64,19 +75,23 @@ class TurtleTeleporter(Node):
 		req_spawn.y = 5.544445
 		req_spawn.theta = 0.0
 		self.client_spawn.call_async(req_spawn)
+		self.Turtle_Poses[turtle_name] = Pose()
+		self.Turtle_Poses[turtle_name].x = 5.44445
+		self.Turtle_Poses[turtle_name].y = 5.44445
+		self.Turtle_Poses[turtle_name].theta = 0.0
 
 	def set_pen_white(self, turtle_name, on_off=True): # Set the pen color to white
-		self.SetPen_clients[turtle_name].wait_for_service()
+		self.SetPen_Clients[turtle_name].wait_for_service()
 		req_pen = SetPen.Request()
 		req_pen.r = 255
 		req_pen.g = 255
 		req_pen.b = 255
 		req_pen.width = 2
 		req_pen.off = not on_off
-		self.SetPen_clients[turtle_name].call_async(req_pen)
+		self.SetPen_Clients[turtle_name].call_async(req_pen)
 
 	def teleport_turtle(self, turtle_name): ##### REMOVE #####
-		self.Teleport_clients[turtle_name].wait_for_service()
+		self.Teleport_Clients[turtle_name].wait_for_service()
 		for coord in self.coordinates:
 			req = TeleportAbsolute.Request()
 			req.x = coord.x
@@ -84,9 +99,91 @@ class TurtleTeleporter(Node):
 			req.theta = 0.0
 
 			self.get_logger().info(f"Teleporting turtle to ({req.x}, {req.y})")
-			future = self.Teleport_clients[turtle_name].call_async(req)
+			future = self.Teleport_Clients[turtle_name].call_async(req)
 			rclpy.spin_until_future_complete(self, future)
+			self.spin()
 		self.remove_turtle(turtle_name)
+	
+	def draw_logo_one_turtle(self, turtle_name, turtle_pose):
+		for segment in self.segments:
+			self.set_pen_white(turtle_name, on_off=False) # Move to line segment, with pen off
+			self.rotate_turtle(turtle_name, turtle_pose, segment.start)
+			self.move_to_target(turtle_name, turtle_pose, segment.start)
+
+			self.set_pen_white(turtle_name, on_off=True) # Draw line segment, with pen on
+			self.rotate_turtle(turtle_name, turtle_pose, segment.end)
+			self.move_to_target(turtle_name, turtle_pose, segment.end)
+
+	def rotate_turtle(self, turtle_name, turtle_pose, point):
+		target_x = point.x
+		target_y = point.y
+		
+		# Calculate the angle to rotate towards the target point
+		angle_to_target = atan2(sin(target_y - turtle_pose.y), cos(target_x - turtle_pose.x))
+		angle_diff = angle_to_target - turtle_pose.theta
+
+		print("------ Rotating ------")
+		print(f"Target: ({target_x},{target_y})")
+		print(f"Turtle: ({turtle_pose.x},{turtle_pose.y}, {turtle_pose.theta})")
+		print(f"{angle_diff} = {angle_to_target} - {turtle_pose.theta}")
+
+		# Rotate the turtle towards the target point
+		while abs(angle_diff) > 0.01:
+			# Change angle
+			twist_msg = Twist()
+			twist_msg.angular.z = angle_diff
+			self.Twist_Publishers[turtle_name].publish(twist_msg)
+			rclpy.spin_once(self.control_node)
+			
+			# Get new angle
+			angle_diff = angle_to_target - turtle_pose.theta
+			turtle_pose = self.Turtle_Poses[turtle_name]
+
+		# Stop rotations
+		twist_msg = Twist()
+		twist_msg.angular.z = 0.0
+		self.Twist_Publishers[turtle_name].publish(twist_msg)
+		rclpy.spin_once(self.control_node)
+
+		print("------ Stopping ------")
+		print(f"Target: ({target_x},{target_y})")
+		print(f"Turtle: ({turtle_pose.x},{turtle_pose.y}, {turtle_pose.theta})")
+		print(f"Angle Diff = {angle_diff} = {angle_to_target} - {turtle_pose.theta}")
+		print("----------------------")
+
+	def move_to_target(self, turtle_name, turtle_pose, point):
+		target_x = point.x
+		target_y = point.y
+
+		# Calculate the distance to the target point
+		distance_to_target = sqrt((target_x - turtle_pose.x) ** 2 + (target_y - turtle_pose.y) ** 2)
+
+		print("------ Swimming ------")
+		print(f"Target: ({target_x},{target_y})")
+		print(f"Turtle: ({turtle_pose.x},{turtle_pose.y}, {turtle_pose.theta})")
+		print(f"Distance to Target = {distance_to_target}")
+
+		# Move the turtle to the target point
+		while distance_to_target > 0.5:
+			twist_msg = Twist()
+			twist_msg.linear.x = distance_to_target
+			self.Twist_Publishers[turtle_name].publish(twist_msg)
+			rclpy.spin_once(self.control_node)
+
+			distance_to_target = sqrt((target_x - turtle_pose.x) ** 2 + (target_y - turtle_pose.y) ** 2)
+			turtle_pose = self.Turtle_Poses[turtle_name]
+		
+		# Stop movement
+		twist_msg = Twist()
+		twist_msg.linear.x = 0.0
+		self.Twist_Publishers[turtle_name].publish(twist_msg)
+		rclpy.spin_once(self.control_node)
+
+		print("------ Stopping ------")
+		print(f"Target: ({target_x},{target_y})")
+		print(f"Turtle: ({turtle_pose.x},{turtle_pose.y}, {turtle_pose.theta})")
+		print(f"{distance_to_target}")
+		print("----------------------")
 				
 	def remove_turtle(self, turtle_name): # Kill a turtle :(
 		self.client_kill = self.create_client(Kill, "/kill") # Client for kill service
@@ -102,7 +199,7 @@ def main(args=None):
 	# List of coordinates to teleport to
 	node_name = "turtle_teleporter"
 	
-	teleported = TurtleTeleporter(node_name)
+	teleported = DrawTAM(node_name)
 	#rclpy.spin(teleported)
 
 	teleported.destroy_node()
