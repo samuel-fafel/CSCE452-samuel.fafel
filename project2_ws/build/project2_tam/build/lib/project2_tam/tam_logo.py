@@ -93,8 +93,8 @@ my_points = [
 ]
 
 for point in my_points:
-	point.x = point.x * 2 / 100.0 - 1
-	point.y = point.y * -2 / 100.0 + 12
+	point.x = round(point.x * 2 / 100.0 - 1, 2)
+	point.y = round(point.y * -2 / 100.0 + 12, 2)
 
 my_lines = [
 	# A

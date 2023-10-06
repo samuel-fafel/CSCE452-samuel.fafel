@@ -1,18 +1,15 @@
-def rotate_towards_point(self, target_x, target_y):
-        # Calculate the angle to rotate towards the target point
-        angle_to_target = atan2(target_y - self.turtle_pose.y, target_x - self.turtle_pose.x)
-        angle_diff = angle_to_target - self.turtle_pose.theta
+from math import sqrt, atan2
 
-        # Adjust the angle difference to be within the range [-pi, pi]
-        if angle_diff > 3.14159265359:
-            angle_diff -= 2 * 3.14159265359
-        elif angle_diff < -3.14159265359:
-            angle_diff += 2 * 3.14159265359
+def euclidean_distance(goal_pose, turtle_pose):
+    """Euclidean distance between current pose and the goal."""
+    return sqrt(pow((goal_pose.x - turtle_pose.x), 2) +
+                pow((goal_pose.y - turtle_pose.y), 2))
 
-        # Rotate the turtle towards the target point
-        while abs(angle_diff) > 0.1:
-            twist_msg = Twist()
-            twist_msg.angular.z = 0.5 if angle_diff > 0 else -0.5
-            self.pub_cmd_vel.publish(twist_msg)
-            rclpy.spin_once(self.node)
-            angle_diff = angle_to_target - self.turtle_pose.theta
+def linear_vel(goal_pose, turtle_pose, constant=1.5):
+    return constant * euclidean_distance(goal_pose, turtle_pose)
+
+def steering_angle(goal_pose, turtle_pose):
+    return atan2(goal_pose.y - turtle_pose.y, goal_pose.x - turtle_pose.x)
+
+def angular_vel(goal_pose, turtle_pose, constant=6):
+    return constant * (steering_angle(goal_pose, turtle_pose) - turtle_pose.theta)

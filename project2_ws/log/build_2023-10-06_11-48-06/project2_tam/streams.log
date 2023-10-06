@@ -1,0 +1,23 @@
+[1.352s] Invoking command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/src/project2_tam': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/build/project2_tam/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project2_tam build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/build/project2_tam/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/build/project2_tam/install.log --single-version-externally-managed
+[1.753s] running egg_info
+[1.754s] writing ../../build/project2_tam/project2_tam.egg-info/PKG-INFO
+[1.755s] writing dependency_links to ../../build/project2_tam/project2_tam.egg-info/dependency_links.txt
+[1.755s] writing entry points to ../../build/project2_tam/project2_tam.egg-info/entry_points.txt
+[1.755s] writing requirements to ../../build/project2_tam/project2_tam.egg-info/requires.txt
+[1.755s] writing top-level names to ../../build/project2_tam/project2_tam.egg-info/top_level.txt
+[1.757s] reading manifest file '../../build/project2_tam/project2_tam.egg-info/SOURCES.txt'
+[1.758s] writing manifest file '../../build/project2_tam/project2_tam.egg-info/SOURCES.txt'
+[1.758s] running build
+[1.758s] running build_py
+[1.759s] running install
+[1.759s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.759s]   warnings.warn(
+[1.760s] running install_lib
+[1.763s] running install_data
+[1.764s] running install_egg_info
+[1.767s] removing '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/python3.10/site-packages/project2_tam-0.0.0-py3.10.egg-info' (and everything under it)
+[1.767s] Copying ../../build/project2_tam/project2_tam.egg-info to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/python3.10/site-packages/project2_tam-0.0.0-py3.10.egg-info
+[1.768s] running install_scripts
+[1.802s] Installing project2 script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/project2_tam
+[1.802s] writing list of installed files to '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/build/project2_tam/install.log'
+[1.820s] Invoked command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/src/project2_tam' returned '0': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/build/project2_tam/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project2_tam build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/build/project2_tam/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/build/project2_tam/install.log --single-version-externally-managed
