@@ -11,9 +11,10 @@ setup.py
 project2_tam/__init__.py
 project2_tam/background.py
 project2_tam/draw_tam.py
-project2_tam/external.py
 project2_tam/movement.py
+project2_tam/nathan.py
 project2_tam/project2.py
+project2_tam/project2_nathan.py
 project2_tam/steering.py
 project2_tam/tam_logo.py
 project2_tam/teleporter.py

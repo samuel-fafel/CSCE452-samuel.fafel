@@ -16,9 +16,13 @@ class DrawTAM(Node):
 	def __init__(self, node_name):
 		super().__init__(node_name)
 		self.segments = tam.my_lines
+
+		self.accuracy = self.declare_parameter('accuracy', 1000).value
 		
 		self.num_turtles = self.declare_parameter('num_turtles', 1).value
 		self.turtle_names = [f'turtle{i}' for i in range(1, self.num_turtles + 1)] # Name the turtles 
+		self.num_segments_per_turtle = len(self.segments) // self.num_turtles
+		self.left_over_segments = len(self.segments) % self.num_turtles
 
 		self.initialize_simulator() # Prep turtlesim
 
@@ -27,6 +31,7 @@ class DrawTAM(Node):
 		self.Twist_Publishers = {}
 		self.Pose_Subscriptions = {}
 		self.Turtle_Poses = {}
+		self.Turtle_Segments = {}
 		for turtle_name in self.turtle_names:
 			self.spawn_turtle(turtle_name) # Spawn turtle
 
@@ -37,9 +42,13 @@ class DrawTAM(Node):
 
 			self.set_pen_white(turtle_name)
 
-		#for turtle_name in self.turtle_names:
 		timer_period = 0.1
-		self.timer = self.create_timer(timer_period, self.move_to_goal(self.turtle_names[0], self.segments[0].start, self.segments[::-1]))
+		
+		self.distribute_segments()
+		self.direct_multiple_turtles()
+		quit()
+		for turtle_name in turtle_names:
+			remove_turtle(turtle_name)
 
 	def pose_callback(self, turtle_name, msg):
 		self.Turtle_Poses[turtle_name].x = msg.x
@@ -47,6 +56,22 @@ class DrawTAM(Node):
 		self.Turtle_Poses[turtle_name].theta = msg.theta
 		POSITION  = "POSE:  X: {:.3}, Y: {:.3}, Theta: {:f}".format(self.Turtle_Poses[turtle_name].x, self.Turtle_Poses[turtle_name].y, self.Turtle_Poses[turtle_name].theta)
 		#print(POSITION)
+
+	def distribute_segments(self):
+		self.segments = self.segments[::-1]
+
+		for turtle_name in self.turtle_names:
+			self.Turtle_Segments[turtle_name] = []
+		while self.segments:
+			for turtle_name in self.turtle_names:
+				if not self.segments:
+					break
+				else:
+					self.Turtle_Segments[turtle_name].append(self.segments.pop())
+
+				"""print(f"{turtle_name}:")
+				for s in self.Turtle_Segments[turtle_name]:
+					print(f"\t{s}")"""
 
 	def initialize_simulator(self): # Clear and set Background
 		self.client_reset = self.create_client(Empty, '/reset')  # Client for /reset service
@@ -72,70 +97,89 @@ class DrawTAM(Node):
 		self.Turtle_Poses[turtle_name].y = 5.44445
 		self.Turtle_Poses[turtle_name].theta = 0.0
 
-	def set_pen_white(self, turtle_name, on_off=True): # Set the pen color to white
+	def set_pen_white(self, turtle_name, on=True): # Set the pen color to white
 		self.SetPen_Clients[turtle_name].wait_for_service()
 		req_pen = SetPen.Request()
 		req_pen.r = 255
 		req_pen.g = 255
 		req_pen.b = 255
 		req_pen.width = 2
-		req_pen.off = not on_off
+		req_pen.off = not on
 		self.SetPen_Clients[turtle_name].call_async(req_pen)
 
-	def calculate_Twist(self, pose, goal):
+	def calculate_twist(self, goal, pose):
 		vel_msg = Twist()
-		vel_msg.x = 0.0
-		vel_msg.z = 0.0
-		vel_msg.theta = 0.0
-		flag = False
+		vel_msg.linear.x = 0.0
+		vel_msg.angular.z = 0.0
 
 		# If I stopped turning and went forward, how close would I be to the goal?
-		current_distance  = euclidean_distance(goal, pose)
-		hypothesis_result = theory_distance(goal, pose)
-		error = abs(hypothesis_result - current_distance)
-		
-		if abs(steering_angle(goal, pose) - pose.theta) >= angular_tolerance:
+		if theory_distance(goal, pose) >= 1/self.accuracy:
+			# Start rotating
 			vel_msg.linear.x = 0.0
 			vel_msg.angular.z = angular_vel(goal, pose)
 		else:
-			print("Steering angle within tolerance")
+			# Stop rotating
 			vel_msg.angular.z = 0.0
-			if euclidean_distance(goal, pose) >= distance_tolerance:
+			if euclidean_distance(goal, pose) >= 1/self.accuracy:
+				# Start moving
 				vel_msg.linear.x = linear_vel(goal, pose)
-				print("moving")
 			else:
-				print("distance within tolerance")
 				vel_msg.linear.x = 0.0
-				flag = True
 
-		if self.flag:
-			if euclidean_distance(goal, self.job.start) == 0:
-				goal.x = self.job.end.x
-				goal.y = self.job.end.y
-				flag = False
-				print("MADE IT TO THE START!")
-			elif euclidean_distance(goal, self.job.end) == 0 and len(self.segments):
-				self.job = self.segments.pop()
-				goal.x = self.job.start.x
-				goal.y = self.job.start.y
-				self.flag = False
-				print("MADE IT TO THE END!")
-			else:
-				return vel_msg
 		return vel_msg
 
-	def publish_Twists(self, turtle_name, twists):
-		for t in twists:
-			self.Twist_Publishers[turtle_name].publish(t)
-			rclpy.spin_once(self)
+	def publish_twists(self, turtle_name, twist):
+		self.Twist_Publishers[turtle_name].publish(twist)
+		rclpy.spin_once(self)
+
+	def direct_multiple_turtles(self):
+		for inst in range(self.num_segments_per_turtle):
+			instructions = {}
+			for turtle_name in self.turtle_names:
+				self.set_pen_white(turtle_name, on=False)
+			for ITERS in range(self.accuracy):
+				for turtle_name in self.turtle_names:
+					instructions[turtle_name] = self.calculate_twist(self.Turtle_Segments[turtle_name][inst].start, self.Turtle_Poses[turtle_name])
+				for turtle_name in self.turtle_names:
+					self.publish_twists(turtle_name, instructions[turtle_name])
+
+			for turtle_name in self.turtle_names:
+				self.set_pen_white(turtle_name, on=True)
+			for ITERS in range(self.accuracy):
+				for turtle_name in self.turtle_names:
+					instructions[turtle_name] = self.calculate_twist(self.Turtle_Segments[turtle_name][inst].end, self.Turtle_Poses[turtle_name])
+				for turtle_name in self.turtle_names:
+					self.publish_twists(turtle_name, instructions[turtle_name])
 		
+		for turtle_name in self.turtle_names[self.left_over_segments:]:
+			self.remove_turtle(turtle_name)
 
-	def move_to_goal(self, turtle_name, goal, segments):
+		instructions = {}
+		for turtle_name in self.turtle_names[:self.left_over_segments]:
+			self.set_pen_white(turtle_name, on=False)
+		for ITERS in range(self.accuracy):
+			for turtle_name in self.turtle_names[:self.left_over_segments]:
+				instructions[turtle_name] = self.calculate_twist(self.Turtle_Segments[turtle_name][-1].start, self.Turtle_Poses[turtle_name])
+			for turtle_name in self.turtle_names[:self.left_over_segments]:
+				self.publish_twists(turtle_name, instructions[turtle_name])
+
+		for turtle_name in self.turtle_names[:self.left_over_segments]:
+			self.set_pen_white(turtle_name, on=True)
+		for ITERS in range(self.accuracy):
+			for turtle_name in self.turtle_names[:self.left_over_segments]:
+				instructions[turtle_name] = self.calculate_twist(self.Turtle_Segments[turtle_name][-1].end, self.Turtle_Poses[turtle_name])
+			for turtle_name in self.turtle_names[:self.left_over_segments]:
+				self.publish_twists(turtle_name, instructions[turtle_name])
+		for turtle_name in self.turtle_names[:self.left_over_segments]:
+			self.remove_turtle(turtle_name)
+
+	def move_to_goal(self, turtle_name, goal, job, segments):
 		twist_msg = Twist()
-		angluar_tolerance=0.01
-		linear_tolerance=0.005
 
-		job = segments.pop()
+		if euclidean_distance(goal, job.start) == 0: # Goal is at segment start
+			self.set_pen_white(turtle_name, on=False)
+		if euclidean_distance(goal, job.end) == 0: # Goal is at segment end
+			self.set_pen_white(turtle_name, on=True)
 		
 		JOB_START = "START: X: {:.3}, Y: {:.3}".format(job.start.x, job.start.y)
 		JOB_END   = "END:   X: {:.3}, Y: {:.3}".format(job.end.x, job.end.y)
@@ -149,17 +193,12 @@ class DrawTAM(Node):
 		print(STR_ANGL)
 
 		# Move the turtle to the target goal
-		while euclidean_distance(goal, self.Turtle_Poses[turtle_name]) >= linear_tolerance:
+		while euclidean_distance(goal, self.Turtle_Poses[turtle_name]) >= 1/self.accuracy:
 			# If I stopped turning and went forward, how close would I be to the goal?
-			current_distance  = euclidean_distance(goal, self.Turtle_Poses[turtle_name])
 			hypothesis_result = theory_distance(goal, self.Turtle_Poses[turtle_name])
-			error = abs(hypothesis_result - current_distance)
-			#print(f"Hypothesis: {hypothesis_result}")
-			#print(f"Current: {current_distance}")
-			#print(f"Error: {error}")
 
 			# Rotate the turtle towards the target goal
-			if hypothesis_result > linear_tolerance:
+			if hypothesis_result > 1/self.accuracy:
 				# Start rotating
 				twist_msg.linear.x = 0.0
 				twist_msg.angular.z = angular_vel(goal, self.Turtle_Poses[turtle_name], 1)
@@ -185,18 +224,18 @@ class DrawTAM(Node):
 		self.Twist_Publishers[turtle_name].publish(twist_msg)
 		rclpy.spin_once(self)
 
-		if euclidean_distance(goal, job.start) < linear_tolerance:
-			self.move_to_goal(turtle_name, job.end, segments)
+		if euclidean_distance(goal, job.start) == 0: # Goal was at the start of the segment
 			print("MADE IT TO THE START!")
-		elif euclidean_distance(goal, job.end) < linear_tolerance and len(segments):
-			job = segments.pop()
-			self.move_to_goal(turtle_name, job.start, segments)
+			self.move_to_goal(turtle_name, job.end, job, segments)
+		elif euclidean_distance(goal, job.end) < 1/self.accuracy and len(segments): # Goal was at the end of the segment
 			print("MADE IT TO THE END!")
+			job = segments.pop()
+			self.move_to_goal(turtle_name, job.start, job, segments)
 		else:
-			quit()
+			return
 
 		print("-----")
-	
+
 	def remove_turtle(self, turtle_name): # Kill a turtle :(
 		self.client_kill = self.create_client(Kill, "/kill") # Client for kill service
 		self.client_kill.wait_for_service()
@@ -209,12 +248,14 @@ def main(args=None):
 	rclpy.init(args=args)
 
 	# List of coordinates to teleport to
-	node_name = "turtle_teleporter"
+	node_name = "turtle_controller"
 	
-	teleported = DrawTAM(node_name)
-	#rclpy.spin(teleported)
+	controller = DrawTAM(node_name)
+	#rclpy.spin(controller)
 
-	teleported.destroy_node()
+	######################################
+
+	controller.destroy_node()
 	rclpy.shutdown()
 
 if __name__ == '__main__':

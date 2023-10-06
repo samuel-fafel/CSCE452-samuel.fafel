@@ -1,0 +1,6 @@
+[0.000000] (-) TimerEvent: {}
+[0.000152] (project2_tam) JobQueued: {'identifier': 'project2_tam', 'dependencies': OrderedDict()}
+[0.000194] (project2_tam) JobStarted: {'identifier': 'project2_tam'}
+[0.099041] (-) TimerEvent: {}
+[0.146506] (project2_tam) JobEnded: {'identifier': 'project2_tam', 'rc': 0}
+[0.157258] (-) EventReactorShutdown: {}

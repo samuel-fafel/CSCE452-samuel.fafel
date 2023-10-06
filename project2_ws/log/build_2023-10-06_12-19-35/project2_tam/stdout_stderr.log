@@ -1,0 +1,27 @@
+running egg_info
+writing ../../build/project2_tam/project2_tam.egg-info/PKG-INFO
+writing dependency_links to ../../build/project2_tam/project2_tam.egg-info/dependency_links.txt
+writing entry points to ../../build/project2_tam/project2_tam.egg-info/entry_points.txt
+writing requirements to ../../build/project2_tam/project2_tam.egg-info/requires.txt
+writing top-level names to ../../build/project2_tam/project2_tam.egg-info/top_level.txt
+reading manifest file '../../build/project2_tam/project2_tam.egg-info/SOURCES.txt'
+writing manifest file '../../build/project2_tam/project2_tam.egg-info/SOURCES.txt'
+running build
+running build_py
+copying project2_tam/project2_nathan.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/build/project2_tam/build/lib/project2_tam
+copying project2_tam/nathan.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/build/project2_tam/build/lib/project2_tam
+running install
+/usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+  warnings.warn(
+running install_lib
+copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/build/project2_tam/build/lib/project2_tam/project2_nathan.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/python3.10/site-packages/project2_tam
+copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/build/project2_tam/build/lib/project2_tam/nathan.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/python3.10/site-packages/project2_tam
+byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/python3.10/site-packages/project2_tam/project2_nathan.py to project2_nathan.cpython-310.pyc
+byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/python3.10/site-packages/project2_tam/nathan.py to nathan.cpython-310.pyc
+running install_data
+running install_egg_info
+removing '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/python3.10/site-packages/project2_tam-0.0.0-py3.10.egg-info' (and everything under it)
+Copying ../../build/project2_tam/project2_tam.egg-info to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/python3.10/site-packages/project2_tam-0.0.0-py3.10.egg-info
+running install_scripts
+Installing project2 script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/install/project2_tam/lib/project2_tam
+writing list of installed files to '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/build/project2_tam/install.log'
