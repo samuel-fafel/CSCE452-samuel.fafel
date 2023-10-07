@@ -14,9 +14,11 @@ from project2_tam.steering import euclidean_distance, linear_vel, steering_angle
 class DrawTAM(Node):
 	def __init__(self, node_name):
 		super().__init__(node_name)
-		self.segments = tam.my_lines
-		
+		self.segments = tam.my_lines[::-1]
 		self.num_turtles = self.declare_parameter('num_turtles', 1).value
+		if self.num_turtles > len(self.segments): # Cannot have more turtles than lines to draw
+			self.num_turtles = len(self.segments)
+
 		self.turtle_names = [f'turtle{i}' for i in range(1, self.num_turtles + 1)] # Name the turtles 
 		self.num_segments_per_turtle = len(self.segments) // self.num_turtles
 		self.left_over_segments = len(self.segments) % self.num_turtles
@@ -110,7 +112,7 @@ class DrawTAM(Node):
 			vel_msg.angular.z = 0.0
 			if euclidean_distance(goal, pose) >= 1/self.accuracy:
 				# Start moving
-				vel_msg.linear.x = linear_vel(goal, pose)
+				vel_msg.linear.x = linear_vel(goal, pose, 2)
 			else:
 				vel_msg.linear.x = 0.0
 
@@ -121,11 +123,12 @@ class DrawTAM(Node):
 		rclpy.spin_once(self)
 
 	def turtles_go_to_points(self, turtles, num, pen_toggle): # Tell the turtles to go to their respective next point
-		index = num if num > 1 else -1 # Check for leftover lines
+		#num = num if num >= 1 else -1 # Check for leftover lines
 		Instructions = {}
 		for turtle_name in turtles:
 			self.set_pen_white(turtle_name, on=pen_toggle) 	# Set all turtles' pens on or off
-		for ITERS in range(self.accuracy): 					# Give all of the turtles the same amount of time to get to their assigned point
+		for TICK in range(self.accuracy-200): 				# Give all of the turtles the same amount of time to get to their assigned point
+			#print(f"tick:{TICK}")
 			for turtle_name in turtles: 					# Calculate how to go to point
 				if not pen_toggle: 								# Turtle is going to the start of a line segment (Don't Draw)
 					Instructions[turtle_name] = self.calculate_twist(self.Turtle_Segments[turtle_name][num].start, self.Turtle_Poses[turtle_name])
@@ -136,14 +139,16 @@ class DrawTAM(Node):
 
 	def direct_multiple_turtles(self, num_points): # Draw the TAMU Logo!
 		for num in range(num_points):
+			#print(f"STARTING! {num}")
 			self.turtles_go_to_points(self.turtle_names, num, pen_toggle=False) # Turtles go to segment start
+			#print(f"ENDING! {num}")
 			self.turtles_go_to_points(self.turtle_names, num, pen_toggle=True)  # Turtles go to segment end
 			
-			for turtle_name in self.turtle_names[self.left_over_segments:]: # Remove finished turtles
-				self.remove_turtle(turtle_name)
+		for turtle_name in self.turtle_names[self.left_over_segments:]: # Remove finished turtles
+			self.remove_turtle(turtle_name)
 
-		self.turtles_go_to_points(self.turtle_names[:self.left_over_segments], 1, False) # Turtles go to segment start
-		self.turtles_go_to_points(self.turtle_names[:self.left_over_segments], 1, True)  # Turtles go to segment end
+		self.turtles_go_to_points(self.turtle_names[:self.left_over_segments], -1, False) # Turtles go to segment start
+		self.turtles_go_to_points(self.turtle_names[:self.left_over_segments], -1, True)  # Turtles go to segment end
 
 		for turtle_name in self.turtle_names[:self.left_over_segments]:
 			self.remove_turtle(turtle_name)

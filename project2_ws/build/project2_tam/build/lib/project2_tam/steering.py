@@ -1,8 +1,6 @@
 from turtlesim.msg import Pose
 from math import sqrt, atan2, cos, sin
 
-r = 4
-
 def euclidean_distance(goal, pose):
 	"""Euclidean distance between current pose and the goal."""
 	return sqrt(pow((goal.x - pose.x), 2) + pow((goal.y - pose.y), 2))

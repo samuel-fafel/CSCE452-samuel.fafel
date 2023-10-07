@@ -10,9 +10,7 @@ setup.py
 ../../build/project2_tam/project2_tam.egg-info/zip-safe
 project2_tam/__init__.py
 project2_tam/background.py
-project2_tam/nathan.py
 project2_tam/project2.py
-project2_tam/project2_nathan.py
 project2_tam/steering.py
 project2_tam/tam_logo.py
 project2_tam/teleporter.py

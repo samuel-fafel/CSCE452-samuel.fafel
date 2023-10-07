@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/home/samuel/ros2_humble/CSCE452-samuel.fafel/project2_ws/src/project2_tam/setup.py", line 1, in <module>
+    from setuptools import find_packages, setup
+  File "/usr/lib/python3/dist-packages/setuptools/__init__.py", line 16, in <module>
+    import setuptools.version
+  File "/usr/lib/python3/dist-packages/setuptools/version.py", line 1, in <module>
+    import pkg_resources
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 879, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1012, in get_code
+  File "<frozen importlib._bootstrap_external>", line 672, in _compile_bytecode
+KeyboardInterrupt
