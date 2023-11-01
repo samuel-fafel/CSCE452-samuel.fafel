@@ -23,9 +23,13 @@ class PeopleTracker(Node):
         self.num_background_obstacles = 4
         self.next_obstacle_id = 0
         self.distance_threshold = 1.0  # Threshold to match clusters to existing people
-        self.startup_count = 0
+        self.startup_count = 0 
+        self.STARTUP_LIMIT = 15
+        # The purpose of self.startup_count is to initialize self.obstacles with the static objects, 
+        # then after the _count reaches the _LIMIT, any new obstacles are counted as people.
+        # In practice, we have _LIMIT scan_callbacks to find background objects and remove them from consideration before we start counting people
 
-    def polar_to_cartesian(self, ranges, angle_min, angle_increment):
+    def polar_to_cartesian(self, ranges, angle_min, angle_increment): # Converts to Cartesian Coords for the sake of DBSCAN
         coords = []
         for i, range in enumerate(ranges):
             if range < 10.0:  # Filter out distant points
@@ -43,15 +47,16 @@ class PeopleTracker(Node):
 
         # Process clusters and track people
         unique_labels = set(labels)
-        for k in unique_labels:
-            if k == -1:  # Ignore noise
+        for L in unique_labels:
+            if L == -1:  # Ignore noise
                 continue
 
-            class_member_mask = (labels == k)
+            # Determine Clusters of Points
+            class_member_mask = (labels == L)
             cluster = points[class_member_mask]
             cluster_center = np.mean(cluster, axis=0)
             
-            # Match with existing obstacle or create new one
+            # Match with existing obstacle or create new one (don't count the same obstacle twice)
             matched = False
             for obstacle_id, obstacle in self.obstacles.items():
                 if np.linalg.norm(obstacle.position - cluster_center) < self.distance_threshold:
@@ -60,11 +65,11 @@ class PeopleTracker(Node):
                     break
 
             if not matched:
-                new_obstacle = Obstacle(self.next_obstacle_id, cluster_center)
-                self.obstacles[self.next_obstacle_id] = new_obstacle
-                if self.startup_count < 15:
-                    self.num_background_obstacles = len(self.obstacles)
-                self.next_obstacle_id += 1
+                new_obstacle = Obstacle(self.next_obstacle_id, cluster_center) # create new obstacle
+                self.obstacles[self.next_obstacle_id] = new_obstacle # add it to the dictionary
+                if self.startup_count < self.STARTUP_LIMIT: # are we still starting up?
+                    self.num_background_obstacles = len(self.obstacles) # if so, count it as background
+                self.next_obstacle_id += 1 # increment id
                 self.get_logger().info(f"\tTotal people tracked: {len(self.obstacles) - self.num_background_obstacles}")
 
         
