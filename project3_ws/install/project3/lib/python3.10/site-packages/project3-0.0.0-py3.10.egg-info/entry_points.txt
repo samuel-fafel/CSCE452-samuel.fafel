@@ -1,0 +1,4 @@
+[console_scripts]
+counter = project3.counter:main
+detector = project3.detector:main
+

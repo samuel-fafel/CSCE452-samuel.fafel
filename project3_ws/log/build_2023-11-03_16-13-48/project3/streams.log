@@ -1,0 +1,46 @@
+[1.358s] Invoking command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/src/project3': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project3 build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/install.log --single-version-externally-managed
+[1.771s] running egg_info
+[1.771s] creating ../../build/project3/project3.egg-info
+[1.772s] writing ../../build/project3/project3.egg-info/PKG-INFO
+[1.772s] writing dependency_links to ../../build/project3/project3.egg-info/dependency_links.txt
+[1.772s] writing entry points to ../../build/project3/project3.egg-info/entry_points.txt
+[1.772s] writing requirements to ../../build/project3/project3.egg-info/requires.txt
+[1.772s] writing top-level names to ../../build/project3/project3.egg-info/top_level.txt
+[1.772s] writing manifest file '../../build/project3/project3.egg-info/SOURCES.txt'
+[1.774s] reading manifest file '../../build/project3/project3.egg-info/SOURCES.txt'
+[1.775s] writing manifest file '../../build/project3/project3.egg-info/SOURCES.txt'
+[1.775s] running build
+[1.775s] running build_py
+[1.775s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build
+[1.775s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib
+[1.775s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3
+[1.775s] copying project3/launch.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3
+[1.775s] copying project3/__init__.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3
+[1.775s] copying project3/counter.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3
+[1.776s] copying project3/detector.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3
+[1.776s] running install
+[1.776s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.776s]   warnings.warn(
+[1.776s] running install_lib
+[1.777s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3
+[1.777s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3/launch.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3
+[1.777s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3/__init__.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3
+[1.777s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3/counter.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3
+[1.778s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3/detector.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3
+[1.780s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3/launch.py to launch.cpython-310.pyc
+[1.780s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3/__init__.py to __init__.cpython-310.pyc
+[1.780s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3/counter.py to counter.cpython-310.pyc
+[1.780s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3/detector.py to detector.cpython-310.pyc
+[1.781s] running install_data
+[1.782s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/share/ament_index
+[1.782s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/share/ament_index/resource_index
+[1.782s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/share/ament_index/resource_index/packages
+[1.782s] copying resource/project3 -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/share/ament_index/resource_index/packages
+[1.782s] copying package.xml -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/share/project3
+[1.782s] running install_egg_info
+[1.785s] Copying ../../build/project3/project3.egg-info to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3-0.0.0-py3.10.egg-info
+[1.786s] running install_scripts
+[1.821s] Installing counter script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/project3
+[1.822s] Installing detector script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/project3
+[1.822s] writing list of installed files to '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/install.log'
+[1.840s] Invoked command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/src/project3' returned '0': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project3 build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/install.log --single-version-externally-managed
