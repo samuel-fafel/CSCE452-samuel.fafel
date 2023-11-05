@@ -19,12 +19,8 @@ class PeopleDetector(Node):
         self.subscription = self.create_subscription(LaserScan,'/scan', self.scan_callback, 10) # subscribe to /scan
         self.points_publisher = self.create_publisher(PointCloud, '/object_locations', 10) # publish to /object_locations
 
-        self.obstacles = {}
-        self.next_obstacle_id = 0
-
         self.CLUSTER_COUNT = 5 # Minimum number of points needed to form a cluster
         self.CLUSTER_RADIUS = 0.3 # Points must be within this radius to be considered part of the same cluster
-        self.DISTANCE_THRESHOLD = 0.6 # Threshold to match clusters to existing obstacles
 
     def polar_to_cartesian(self, ranges, angle_min, angle_increment): # Converts to Cartesian Coords for the sake of DBSCAN
         coords = []
@@ -37,8 +33,8 @@ class PeopleDetector(Node):
         return np.array(coords)
 
     def cluster_processing(self, msg):
-        self.next_obstacle_id = 0
-        self.obstacles = {}
+        next_obstacle_id = 0
+        obstacles = {}
 
         # Process clusters and track people
         points = self.polar_to_cartesian(msg.ranges, msg.angle_min, msg.angle_increment)
@@ -54,23 +50,23 @@ class PeopleDetector(Node):
             cluster = points[class_member_mask]
             cluster_center = np.mean(cluster, axis=0)
         
-            new_obstacle = Obstacle(self.next_obstacle_id, cluster_center) # create new obstacle
-            self.obstacles[self.next_obstacle_id] = new_obstacle # add it to the dictionary
-            self.next_obstacle_id = len(self.obstacles) + 1 # increment id
+            new_obstacle = Obstacle(next_obstacle_id, cluster_center) # create new obstacle
+            obstacles[next_obstacle_id] = new_obstacle # add it to the dictionary
+            next_obstacle_id = len(obstacles) + 1 # increment id
 
         obstacle_locations = {}
-        for obstacle_id, obstacle in self.obstacles.items():
+        for obstacle_id, obstacle in obstacles.items():
                 obstacle_locations[obstacle_id] = (obstacle.position)
-        return obstacle_locations
+        return obstacles, obstacle_locations
 
     def scan_callback(self, msg):
-        object_locations = self.cluster_processing(msg)
+        obstacles, object_locations = self.cluster_processing(msg)
         
         # Prepare PointCloud message
         cloud_msg = PointCloud()
         cloud_msg.header.stamp = self.get_clock().now().to_msg()
         cloud_msg.header.frame_id = "laser"
-        for obstacle_id_id, obstacle in self.obstacles.items(): # Fill the points in the PointCloud message
+        for obstacle_id_id, obstacle in obstacles.items(): # Fill the points in the PointCloud message
             point = Point32()
             point.x = float(obstacle.position[0])
             point.y = float(obstacle.position[1])

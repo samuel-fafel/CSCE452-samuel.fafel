@@ -57,16 +57,16 @@ class PeopleDetector(Node):
         obstacle_locations = {}
         for obstacle_id, obstacle in obstacles.items():
                 obstacle_locations[obstacle_id] = (obstacle.position)
-        return obstacle_locations
+        return obstacles, obstacle_locations
 
     def scan_callback(self, msg):
-        object_locations = self.cluster_processing(msg)
+        obstacles, object_locations = self.cluster_processing(msg)
         
         # Prepare PointCloud message
         cloud_msg = PointCloud()
         cloud_msg.header.stamp = self.get_clock().now().to_msg()
         cloud_msg.header.frame_id = "laser"
-        for obstacle_id_id, obstacle in self.obstacles.items(): # Fill the points in the PointCloud message
+        for obstacle_id_id, obstacle in obstacles.items(): # Fill the points in the PointCloud message
             point = Point32()
             point.x = float(obstacle.position[0])
             point.y = float(obstacle.position[1])

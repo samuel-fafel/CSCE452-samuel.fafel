@@ -22,7 +22,7 @@ def generate_launch_description():
     
     bag_record = ExecuteProcess(
             #Put desired topics after LaunchConfiguration
-            cmd=['ros2', 'bag', 'record', '-o', LaunchConfiguration('bag_out'), '/scan', '/person_locations', '/person_count'],
+            cmd=['ros2', 'bag', 'record', '-o', LaunchConfiguration('bag_out'), '/scan', '/person_locations', '/person_count', '/object_locations'],
             output='screen',
             shell=True
         ) 
