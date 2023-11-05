@@ -1,0 +1,31 @@
+running egg_info
+writing ../../build/project3/project3.egg-info/PKG-INFO
+writing dependency_links to ../../build/project3/project3.egg-info/dependency_links.txt
+writing entry points to ../../build/project3/project3.egg-info/entry_points.txt
+writing requirements to ../../build/project3/project3.egg-info/requires.txt
+writing top-level names to ../../build/project3/project3.egg-info/top_level.txt
+reading manifest file '../../build/project3/project3.egg-info/SOURCES.txt'
+writing manifest file '../../build/project3/project3.egg-info/SOURCES.txt'
+running build
+running build_py
+copying project3/scriptit.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3
+copying project3/counter.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3
+copying project3/detector.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3
+running install
+/usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+  warnings.warn(
+running install_lib
+copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3/scriptit.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3
+copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3/counter.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3
+copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3/detector.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3
+byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3/scriptit.py to scriptit.cpython-310.pyc
+byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3/counter.py to counter.cpython-310.pyc
+byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3/detector.py to detector.cpython-310.pyc
+running install_data
+running install_egg_info
+removing '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3-0.0.0-py3.10.egg-info' (and everything under it)
+Copying ../../build/project3/project3.egg-info to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3-0.0.0-py3.10.egg-info
+running install_scripts
+Installing counter script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/project3
+Installing detector script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/project3
+writing list of installed files to '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/install.log'

@@ -1,0 +1,30 @@
+[1.288s] Invoking command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/src/project3': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project3 build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/install.log --single-version-externally-managed
+[1.698s] running egg_info
+[1.699s] writing ../../build/project3/project3.egg-info/PKG-INFO
+[1.699s] writing dependency_links to ../../build/project3/project3.egg-info/dependency_links.txt
+[1.699s] writing entry points to ../../build/project3/project3.egg-info/entry_points.txt
+[1.700s] writing requirements to ../../build/project3/project3.egg-info/requires.txt
+[1.700s] writing top-level names to ../../build/project3/project3.egg-info/top_level.txt
+[1.701s] reading manifest file '../../build/project3/project3.egg-info/SOURCES.txt'
+[1.702s] writing manifest file '../../build/project3/project3.egg-info/SOURCES.txt'
+[1.702s] running build
+[1.702s] running build_py
+[1.702s] copying project3/counter.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3
+[1.703s] copying project3/detector.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3
+[1.703s] running install
+[1.703s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.703s]   warnings.warn(
+[1.703s] running install_lib
+[1.704s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3/counter.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3
+[1.704s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3/detector.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3
+[1.706s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3/counter.py to counter.cpython-310.pyc
+[1.707s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3/detector.py to detector.cpython-310.pyc
+[1.708s] running install_data
+[1.708s] running install_egg_info
+[1.711s] removing '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3-0.0.0-py3.10.egg-info' (and everything under it)
+[1.711s] Copying ../../build/project3/project3.egg-info to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3-0.0.0-py3.10.egg-info
+[1.712s] running install_scripts
+[1.747s] Installing counter script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/project3
+[1.748s] Installing detector script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/project3
+[1.748s] writing list of installed files to '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/install.log'
+[1.766s] Invoked command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/src/project3' returned '0': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project3 build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/install.log --single-version-externally-managed

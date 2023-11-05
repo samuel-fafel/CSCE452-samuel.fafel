@@ -1,0 +1,27 @@
+[1.250s] Invoking command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/src/project3': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project3 build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/install.log --single-version-externally-managed
+[1.667s] running egg_info
+[1.667s] writing ../../build/project3/project3.egg-info/PKG-INFO
+[1.668s] writing dependency_links to ../../build/project3/project3.egg-info/dependency_links.txt
+[1.668s] writing entry points to ../../build/project3/project3.egg-info/entry_points.txt
+[1.668s] writing requirements to ../../build/project3/project3.egg-info/requires.txt
+[1.668s] writing top-level names to ../../build/project3/project3.egg-info/top_level.txt
+[1.670s] reading manifest file '../../build/project3/project3.egg-info/SOURCES.txt'
+[1.671s] writing manifest file '../../build/project3/project3.egg-info/SOURCES.txt'
+[1.671s] running build
+[1.671s] running build_py
+[1.671s] copying project3/detector.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3
+[1.671s] running install
+[1.671s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.671s]   warnings.warn(
+[1.672s] running install_lib
+[1.672s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build/lib/project3/detector.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3
+[1.675s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3/detector.py to detector.cpython-310.pyc
+[1.676s] running install_data
+[1.676s] running install_egg_info
+[1.679s] removing '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3-0.0.0-py3.10.egg-info' (and everything under it)
+[1.680s] Copying ../../build/project3/project3.egg-info to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages/project3-0.0.0-py3.10.egg-info
+[1.680s] running install_scripts
+[1.716s] Installing counter script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/project3
+[1.716s] Installing detector script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/project3
+[1.716s] writing list of installed files to '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/install.log'
+[1.734s] Invoked command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/src/project3' returned '0': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/install/project3/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project3 build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project3_ws/build/project3/install.log --single-version-externally-managed
