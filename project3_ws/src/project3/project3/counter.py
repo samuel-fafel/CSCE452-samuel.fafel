@@ -70,7 +70,7 @@ class PeopleCounter(Node):
         self.num_background_obstacles = 0
         self.DISTANCE_THRESHOLD = 0.5 # Threshold to consider points as the same person
         self.MOVEMENT_THRESHOLD = 0.75 # threshold to verify movement
-        self.TIMEOUT_DURATION = 10**9 # Must be seen again in less than this to continue existing (nanoseconds)
+        self.TIMEOUT_DURATION = 10**9 # (nanoseconds) see Person.timeout()
         self.ERROR_TOLERANCE = 1.16 # Tolerance for matching objects to predicted paths
 
     def match_object(self, msg):
@@ -98,15 +98,9 @@ class PeopleCounter(Node):
                         x_error = predicted_position[0] - point[0]
                         y_error = predicted_position[1] - point[1]
                         total_error = math.sqrt(x_error**2 + y_error**2)
-                        if total_error < 1.16 and not object_.timeout(3*self.TIMEOUT_DURATION):
+                        if total_error < self.ERROR_TOLERANCE and not object_.timeout(self.TIMEOUT_DURATION):
                             matched = True
                             object_.update_position(point)
-                            print(f"(CASE 2) Matched point {point} with Object {object_id} [Error {total_error:.3}]", end='')
-                            if object_.has_moved(self.MOVEMENT_THRESHOLD): 
-                                object_.person = True
-                                print(" -- Person!")
-                            else:
-                                print()
                             break
             
             if not matched: # CASE 3: New Object
