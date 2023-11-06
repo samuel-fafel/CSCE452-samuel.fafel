@@ -102,6 +102,7 @@ class PeopleCounter(Node):
                         object_.update_position(point)
                         if object_.has_moved(self.MOVEMENT_THRESHOLD):
                             object_.person = True
+                            print(f"{object_id} (Case 2)")
                         break
             
             if not matched: # CASE 3: New Object
