@@ -65,13 +65,12 @@ class PeopleCounter(Node):
         self.cloud_publisher = self.create_publisher(PointCloud, '/person_locations', 10) # publish to /person_locations
         self.count_publisher = self.create_publisher(Int64, '/person_count', 10) # publish to /person_count
         self.objects = {}
-        self.people = {}
         self.next_object_id = 0
         self.num_background_obstacles = 0
-        self.DISTANCE_THRESHOLD = 0.5 # Threshold to consider points as the same person
+        self.DISTANCE_THRESHOLD = 0.2 # Threshold to consider points as the same person
         self.MOVEMENT_THRESHOLD = 0.75 # threshold to verify movement
-        self.TIMEOUT_DURATION = 10**9 # (nanoseconds) see Person.timeout()
-        self.ERROR_TOLERANCE = 1.16 # Tolerance for matching objects to predicted paths
+        self.TIMEOUT_DURATION = 10**8 # (nanoseconds) see Person.timeout()
+        self.ERROR_TOLERANCE = 0.1 # Tolerance for matching objects to predicted paths
 
     def match_object(self, msg):
         #print("---- Matching Objects ----")
@@ -85,10 +84,9 @@ class PeopleCounter(Node):
                 if np.linalg.norm(np.array(object_.position) - point) < self.DISTANCE_THRESHOLD:
                     matched = True
                     object_.update_position(point)
-                    #print(f"(CASE 1) Matched point {point} with Object {object_id}", end='')
                     if object_.has_moved(self.MOVEMENT_THRESHOLD): 
                         object_.person = True
-                        #print(" -- Person!")
+                        print(f"{object_id}(Case 1)")
                     break
             
             if not matched:
@@ -100,42 +98,43 @@ class PeopleCounter(Node):
                         total_error = math.sqrt(x_error**2 + y_error**2)
                         if total_error < self.ERROR_TOLERANCE and not object_.timeout(self.TIMEOUT_DURATION):
                             matched = True
+                            print(f"{object_id}(CASE 2)")
                             object_.update_position(point)
                             break
             
             if not matched: # CASE 3: New Object
                 self.next_object_id += 1 # Simple ID assignment
                 self.objects[self.next_object_id] = (Person(self.next_object_id, point))
-                print(f"(CASE 3) Found new Object {self.next_object_id} at point {point}")
 
     def object_locations_callback(self, msg):
         self.match_object(msg)
 
         # Determine People vs Background Objects
-        self.people = {}
+        people = []
         people_count = 0
         for object_id, object_ in self.objects.items():
-            if object_.person and not object_.timeout(self.TIMEOUT_DURATION):
-                self.people[object_id] = object_
             if object_.person:
                 people_count += 1
+                if not object_.timeout(self.TIMEOUT_DURATION):
+                    people.append(object_)
 
         # Prepare Int64 message
         count_msg = Int64()
         count_msg.data = people_count
-        self.count_publisher.publish(count_msg) # Publish message to /person_count
 
         # Prepare PointCloud message
         cloud_msg = PointCloud()
         cloud_msg.header.stamp = self.get_clock().now().to_msg()
         cloud_msg.header.frame_id = "laser"
-        for person_id, person in self.people.items(): # Fill the points in the PointCloud message
+        for person in people: # Fill the points in the PointCloud message
             point = Point32()
             point.x = float(person.position[0])
             point.y = float(person.position[1])
             point.z = 0.0
             cloud_msg.points.append(point)
-        self.cloud_publisher.publish(cloud_msg) # Publish the message to /person_locations
+
+        self.count_publisher.publish(count_msg) # Publish message to /person_count
+        self.cloud_publisher.publish(cloud_msg) # Publish message to /person_locations
 
         # Log the count of people
         #self.get_logger().info(f'Unique people count: {people_count}')
