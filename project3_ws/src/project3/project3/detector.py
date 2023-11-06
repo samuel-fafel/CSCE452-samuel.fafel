@@ -19,8 +19,8 @@ class PeopleDetector(Node):
         self.subscription = self.create_subscription(LaserScan,'/scan', self.scan_callback, 10) # subscribe to /scan
         self.points_publisher = self.create_publisher(PointCloud, '/object_locations', 10) # publish to /object_locations
 
-        self.CLUSTER_COUNT = 7 # Minimum number of points needed to form a cluster
-        self.CLUSTER_RADIUS = 0.4 # Points must be within this radius to be considered part of the same cluster
+        self.CLUSTER_COUNT = 10 # Minimum number of points needed to form a cluster
+        self.CLUSTER_RADIUS = 0.3 # Points must be within this radius to be considered part of the same cluster
 
     def polar_to_cartesian(self, ranges, angle_min, angle_increment): # Converts to Cartesian Coords for the sake of DBSCAN
         coords = []

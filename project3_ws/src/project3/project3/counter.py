@@ -39,15 +39,17 @@ class Person:
             average_x += (self.history[i][0] / len(self.history))
             average_y += (self.history[i][1] / len(self.history))
 
-        average_displacement = math.sqrt((average_x - average_start_x)**2 + (average_y - average_start_y)**2)
+        dx = self.history[-1][0] - average_start_x
+        dy = self.history[-1][1] - average_start_y
+        average_displacement = math.sqrt(dx**2 + dy**2)
         
         return average_displacement > threshold
 
-
-    def predict_position(self, time_delta):
+    def predict_position(self, point):
         if len(self.history) < 2:
-            return self.position  # Not enough data to predict
+            return 100 # Not enough data to predict
 
+        time_delta = Clock().now() - self.last_seen
         # Calculate velocity based on the last two positions
         delta_x = self.history[-1][0] - self.history[-2][0]
         delta_y = self.history[-1][1] - self.history[-2][1]
@@ -56,7 +58,11 @@ class Person:
         predicted_x = self.history[-1][0] + (delta_x * time_delta.nanoseconds / 10**9) 
         predicted_y = self.history[-1][1] + (delta_y * time_delta.nanoseconds / 10**9)
 
-        return predicted_x, predicted_y
+        x_error = predicted_x - point[0]
+        y_error = predicted_y - point[1]
+        total_error = math.sqrt(x_error**2 + y_error**2)
+
+        return total_error
 
 class PeopleCounter(Node):
     def __init__(self):
@@ -66,47 +72,44 @@ class PeopleCounter(Node):
         self.count_publisher = self.create_publisher(Int64, '/person_count', 10) # publish to /person_count
         self.objects = {}
         self.next_object_id = 0
-        self.num_background_obstacles = 0
-        self.DISTANCE_THRESHOLD = 0.2 # Threshold to consider points as the same person
-        self.MOVEMENT_THRESHOLD = 0.75 # threshold to verify movement
-        self.TIMEOUT_DURATION = 10**8 # (nanoseconds) see Person.timeout()
-        self.ERROR_TOLERANCE = 0.1 # Tolerance for matching objects to predicted paths
+        self.scan_num = 0
+        self.DISTANCE_THRESHOLD = 0.4 # Threshold to consider points as the same person
+        self.MOVEMENT_THRESHOLD = 2 # threshold to verify movement
+        self.TIMEOUT_DURATION = 10**9 # (nanoseconds) see Person.timeout()
+        self.ERROR_TOLERANCE = 0.9 # Tolerance for matching objects to predicted paths
 
     def match_object(self, msg):
-        #print("---- Matching Objects ----")
         # Extract points from the PointCloud message
         current_points = np.array([[point.x, point.y] for point in msg.points])
-
+        print(f"---Scan {self.scan_num} ---")
         # Match points with existing Person objects or create new ones
         for point in current_points:
             matched = False
-            for object_id, object_ in self.objects.items(): # CASE 1: object is moving less than DISTANCE_THRESHOLD units per callback
-                if np.linalg.norm(np.array(object_.position) - point) < self.DISTANCE_THRESHOLD:
-                    matched = True
-                    object_.update_position(point)
+            for object_id, object_ in self.objects.items(): # CASE 1: object is moving less than DISTANCE_THRESHOLD units per callback")
+                if np.linalg.norm(np.array(object_.position) - point) < self.DISTANCE_THRESHOLD and not object_.timeout(self.TIMEOUT_DURATION):
                     if object_.has_moved(self.MOVEMENT_THRESHOLD): 
                         object_.person = True
-                        print(f"{object_id}(Case 1)")
+                        print(f"{object_id} (Case 1)")
+                    matched = True
+                    object_.update_position(point)
                     break
             
             if not matched:
                 for object_id, object_ in self.objects.items(): # CASE 2: object is blinking, try to predict path and match
-                    if object_.person:
-                        predicted_position = object_.predict_position(Clock().now() - object_.last_seen)
-                        x_error = predicted_position[0] - point[0]
-                        y_error = predicted_position[1] - point[1]
-                        total_error = math.sqrt(x_error**2 + y_error**2)
-                        if total_error < self.ERROR_TOLERANCE and not object_.timeout(self.TIMEOUT_DURATION):
-                            matched = True
-                            print(f"{object_id}(CASE 2)")
-                            object_.update_position(point)
-                            break
+                    total_error = object_.predict_position(point)
+                    if total_error < self.ERROR_TOLERANCE and not object_.timeout(self.TIMEOUT_DURATION):
+                        matched = True
+                        object_.update_position(point)
+                        if object_.has_moved(self.MOVEMENT_THRESHOLD):
+                            object_.person = True
+                        break
             
             if not matched: # CASE 3: New Object
                 self.next_object_id += 1 # Simple ID assignment
                 self.objects[self.next_object_id] = (Person(self.next_object_id, point))
 
     def object_locations_callback(self, msg):
+        self.scan_num += 1
         self.match_object(msg)
 
         # Determine People vs Background Objects
