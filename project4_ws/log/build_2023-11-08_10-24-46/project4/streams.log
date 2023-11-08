@@ -1,0 +1,35 @@
+[2.106s] Invoking command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/src/project4': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project4 build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/install.log --single-version-externally-managed
+[2.510s] running egg_info
+[2.510s] creating ../../build/project4/project4.egg-info
+[2.511s] writing ../../build/project4/project4.egg-info/PKG-INFO
+[2.511s] writing dependency_links to ../../build/project4/project4.egg-info/dependency_links.txt
+[2.511s] writing entry points to ../../build/project4/project4.egg-info/entry_points.txt
+[2.511s] writing requirements to ../../build/project4/project4.egg-info/requires.txt
+[2.512s] writing top-level names to ../../build/project4/project4.egg-info/top_level.txt
+[2.512s] writing manifest file '../../build/project4/project4.egg-info/SOURCES.txt'
+[2.513s] reading manifest file '../../build/project4/project4.egg-info/SOURCES.txt'
+[2.513s] writing manifest file '../../build/project4/project4.egg-info/SOURCES.txt'
+[2.514s] running build
+[2.514s] running build_py
+[2.514s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build
+[2.514s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build/lib
+[2.514s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build/lib/project4
+[2.514s] copying project4/__init__.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build/lib/project4
+[2.514s] running install
+[2.515s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[2.515s]   warnings.warn(
+[2.515s] running install_lib
+[2.515s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages/project4
+[2.515s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build/lib/project4/__init__.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages/project4
+[2.517s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages/project4/__init__.py to __init__.cpython-310.pyc
+[2.518s] running install_data
+[2.518s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/share/ament_index
+[2.518s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/share/ament_index/resource_index
+[2.519s] creating /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/share/ament_index/resource_index/packages
+[2.519s] copying resource/project4 -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/share/ament_index/resource_index/packages
+[2.519s] copying package.xml -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/share/project4
+[2.519s] running install_egg_info
+[2.521s] Copying ../../build/project4/project4.egg-info to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages/project4-0.0.0-py3.10.egg-info
+[2.522s] running install_scripts
+[2.559s] writing list of installed files to '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/install.log'
+[2.577s] Invoked command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/src/project4' returned '0': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project4 build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/install.log --single-version-externally-managed
