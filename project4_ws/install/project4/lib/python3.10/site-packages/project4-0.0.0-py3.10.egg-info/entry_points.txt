@@ -1,3 +1,5 @@
 [console_scripts]
-
+robot_state_publisher = robot_state_publisher:main
+simulator = project4.simulator:main
+velocity_translator = project4.velocity_translator:main
 

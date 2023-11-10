@@ -20,6 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'simulator = project4.simulator:main',
+            'velocity_translator = project4.velocity_translator:main',
+            'robot_state_publisher = robot_state_publisher:main'
         ],
     },
 )
