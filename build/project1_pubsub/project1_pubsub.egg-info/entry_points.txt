@@ -1,3 +1,0 @@
-[console_scripts]
-controller = project1_pubsub.project1:main
-
