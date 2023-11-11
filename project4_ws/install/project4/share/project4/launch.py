@@ -64,7 +64,7 @@ def disc_robot_urdf(robot):
 
 def generate_launch_description():
 
-    robot = load_disc_robot('normal.robot') #Hardcoded
+    robot = load_disc_robot('ideal.robot') #HARDCODED
 
     robot_urdf = robot['urdf']
 
@@ -80,7 +80,15 @@ def generate_launch_description():
     
     bag_record = ExecuteProcess(
             #Put desired topics after LaunchConfiguration (add any I may have missed)
-            cmd=['ros2', 'bag', 'record', '-o', LaunchConfiguration('bag_out'), '/robot_state_publisher', '/vl', '/vr', '/robot_pose', '/cmd_vel'],
+            cmd=['ros2', 'bag', 'record', '-o', LaunchConfiguration('bag_out'), 
+                '/robot_description', 
+                '/robot_state_publisher', 
+                '/cmd_vel',
+                '/vl', 
+                '/vr', 
+                '/tf',
+                '/tf_static'
+            ],
             output='screen',
             shell=True
         ) 

@@ -2,7 +2,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64
-from disc_robot.py import *
+from project4.disc_robot import *
 import numpy as np
 
 
@@ -10,13 +10,8 @@ class VelocityTranslator(Node):
 
     def __init__(self):
         super().__init__('velocity_translator')
-        self.robot_model = self.declare_parameter('robot', 'normal.robot').value
-        self.cmd_vel_subscription = self.create_subscription(
-            Twist,
-            '/cmd_vel',
-            self.cmd_vel_callback,
-            10
-        )
+        self.robot_model= 'ideal.robot' # HARDCODED
+        self.cmd_vel_subscription = self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_callback, 10)
         self.vr_publisher = self.create_publisher(Float64, '/vr', 10)
         self.vl_publisher = self.create_publisher(Float64, '/vl', 10)
 

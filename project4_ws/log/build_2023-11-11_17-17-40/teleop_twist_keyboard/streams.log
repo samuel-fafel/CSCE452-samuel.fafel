@@ -1,0 +1,41 @@
+[0.738s] Invoking command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/teleop_twist_keyboard': /usr/bin/cmake /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/src/teleop_twist_keyboard -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/teleop_twist_keyboard
+[0.778s] [0mCMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+[0.778s]   Compatibility with CMake < 2.8.12 will be removed from a future version of
+[0.778s]   CMake.
+[0.778s] 
+[0.778s]   Update the VERSION argument <min> value or use a ...<max> suffix to tell
+[0.778s]   CMake that the project does not need compatibility with older versions.
+[0.778s] 
+[0.778s] [0m
+[0.908s] -- The C compiler identification is GNU 11.4.0
+[1.021s] -- The CXX compiler identification is GNU 11.4.0
+[1.036s] -- Detecting C compiler ABI info
+[1.171s] -- Detecting C compiler ABI info - done
+[1.182s] -- Check for working C compiler: /usr/bin/cc - skipped
+[1.183s] -- Detecting C compile features
+[1.184s] -- Detecting C compile features - done
+[1.188s] -- Detecting CXX compiler ABI info
+[1.333s] -- Detecting CXX compiler ABI info - done
+[1.345s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.345s] -- Detecting CXX compile features
+[1.346s] -- Detecting CXX compile features - done
+[1.394s] [31mCMake Error at CMakeLists.txt:4 (find_package):
+[1.394s]   By not providing "Findcatkin.cmake" in CMAKE_MODULE_PATH this project has
+[1.394s]   asked CMake to find a package configuration file provided by "catkin", but
+[1.394s]   CMake did not find one.
+[1.394s] 
+[1.394s]   Could not find a package configuration file provided by "catkin" with any
+[1.394s]   of the following names:
+[1.395s] 
+[1.395s]     catkinConfig.cmake
+[1.395s]     catkin-config.cmake
+[1.395s] 
+[1.395s]   Add the installation prefix of "catkin" to CMAKE_PREFIX_PATH or set
+[1.395s]   "catkin_DIR" to a directory containing one of the above files.  If "catkin"
+[1.395s]   provides a separate development package or SDK, be sure it has been
+[1.395s]   installed.
+[1.395s] 
+[1.395s] [0m
+[1.395s] -- Configuring incomplete, errors occurred!
+[1.396s] See also "/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/teleop_twist_keyboard/CMakeFiles/CMakeOutput.log".
+[1.397s] Invoked command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/teleop_twist_keyboard' returned '1': /usr/bin/cmake /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/src/teleop_twist_keyboard -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/teleop_twist_keyboard

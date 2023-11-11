@@ -4,26 +4,41 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
-from project4.disc_robot import *
-#import tf_transformations
 from math import sin, cos
+from rclpy.clock import Clock
+
+def euler_to_quaternion(roll, pitch, yaw):
+    """
+    Convert an Euler angle to a quaternion.
+    
+    Input
+      :param roll: The roll (rotation around x-axis) angle
+      :param pitch: The pitch (rotation around y-axis) angle
+      :param yaw: The yaw (rotation around z-axis) angle
+    
+    Output
+      :return qx, qy, qz, qw: The quaternion as a tuple
+    """
+    qx = sin(roll/2) * cos(pitch/2) * cos(yaw/2) - cos(roll/2) * sin(pitch/2) * sin(yaw/2)
+    qy = cos(roll/2) * sin(pitch/2) * cos(yaw/2) + sin(roll/2) * cos(pitch/2) * sin(yaw/2)
+    qz = cos(roll/2) * cos(pitch/2) * sin(yaw/2) - sin(roll/2) * sin(pitch/2) * cos(yaw/2)
+    qw = cos(roll/2) * cos(pitch/2) * cos(yaw/2) + sin(roll/2) * sin(pitch/2) * sin(yaw/2)
+
+    return qx, qy, qz, qw
 
 class Simulator(Node):
     def __init__(self):
-        super().__init__('simulator')
-        
-        # Load the robot dictionary from the YAML file
-        robot_dict = load_disc_robot('normal.robot')
-        # Set the 'robot_description' parameter to the URDF string
-        self.declare_parameter('robot_description', robot_dict['urdf'])
-        
+        super().__init__('simulator')        
         # Subscribers for wheel velocities
         self.vl_subscriber = self.create_subscription(Float64, '/vl', self.vl_callback, 10)
         self.vr_subscriber = self.create_subscription(Float64, '/vr', self.vr_callback, 10)
         
-        # Pose and transform publishers
-        self.pose_publisher = self.create_publisher(Twist, '/robot_pose', 10)
+        # Transform publishers
         self.tf_broadcaster = TransformBroadcaster(self)
+
+        # Create Command Timer
+        self.last_cmd_vel_time = Clock().now()
+        self.timer = self.create_timer(0.1, self.timer_callback)  # Check at 10 Hz
         
         # Initialize pose variables
         self.x = 0.0
@@ -44,11 +59,26 @@ class Simulator(Node):
         # Start the main loop
         self.create_timer(0.1, self.update_pose)  # 10 Hz
 
+    def timer_callback(self):
+        current_time = Clock().now()
+        if (current_time - self.last_cmd_vel_time).nanoseconds > 1e9:  # 1 second in nanoseconds
+            self.stop_robot()
+    
+    def stop_robot(self):
+        vr_msg = Float64()
+        vl_msg = Float64()
+        vr_msg.data = 0.0
+        vl_msg.data = 0.0
+        self.vr_callback(vr_msg)
+        self.vl_callback(vl_msg)
+
     def vl_callback(self, msg):
         self.v_left = msg.data
+        self.last_cmd_vel_time = Clock().now()
 
     def vr_callback(self, msg):
         self.v_right = msg.data
+        self.last_cmd_vel_time = Clock().now()
         
     def update_pose(self):
         # Get current time and calculate delta time
@@ -76,14 +106,6 @@ class Simulator(Node):
         self.publish_pose()
 
     def publish_pose(self):
-        # Calculate and publish the robot's current pose
-        # as a Twist message (or another appropriate message type)
-        pose_msg = Twist()
-        pose_msg.linear.x = self.x
-        pose_msg.linear.y = self.y
-        pose_msg.angular.z = self.theta
-        self.pose_publisher.publish(pose_msg)
-
         # Broadcast the transform from the world frame to the robot's frame
         t = TransformStamped()
         t.header.stamp = self.get_clock().now().to_msg()
@@ -92,11 +114,11 @@ class Simulator(Node):
         t.transform.translation.x = self.x
         t.transform.translation.y = self.y
         t.transform.translation.z = 0.0  # Assuming flat ground
-        #q = tf_transformations.quaternion_from_euler(0, 0, self.theta)
-        #t.transform.rotation.x = q[0]
-        #t.transform.rotation.y = q[1]
-        #t.transform.rotation.z = q[2]
-        #t.transform.rotation.w = q[3]
+        q = euler_to_quaternion(0, 0, self.theta)
+        t.transform.rotation.x = q[0]
+        t.transform.rotation.y = q[1]
+        t.transform.rotation.z = q[2]
+        t.transform.rotation.w = q[3]
 
         self.tf_broadcaster.sendTransform(t)
 
