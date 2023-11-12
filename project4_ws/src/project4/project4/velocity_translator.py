@@ -4,19 +4,20 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64
 from project4.disc_robot import *
 import numpy as np
+from rclpy.clock import Clock
 
 class VelocityTranslator(Node):
 
     def __init__(self):
         super().__init__('velocity_translator')
-        self.robot_model = self.declare_parameter('robot', 'normal.robot').value
+        self.robot_model = self.declare_parameter('robot', 'bad.robot').value
         self.cmd_vel_subscription = self.create_subscription(Twist,'/cmd_vel',self.cmd_vel_callback,10)
         self.vr_publisher = self.create_publisher(Float64, '/vr', 10)
         self.vl_publisher = self.create_publisher(Float64, '/vl', 10)
 
         #Set timer
-        self.last_update_error_time = self.get_clock().now
-        self.create_timer(0.1, timer_callback)
+        self.last_update_error_time = Clock().now()
+        self.create_timer(0.1, self.timer_callback)
 
         #Load robot info
         self.robot = load_disc_robot(self.robot_model)
@@ -31,7 +32,8 @@ class VelocityTranslator(Node):
     
     def timer_callback(self):
         current_time = Clock().now()
-        if ((current_time - self.last_update_error_time).seconds >= self.error_rate): #Determine a new error
+        if ((current_time - self.last_update_error_time).nanoseconds >= 1e9 * self.error_rate): # nanoseconds
+            #Determine a new error
             self.error_vl = self.wheel_error(self.variance_left)
             self.error_vr = self.wheel_error(self.variance_right)
             self.last_update_error_time = current_time
@@ -52,7 +54,6 @@ class VelocityTranslator(Node):
             vr = linear_x + (angular_z*self.L)/2
             vl = linear_x - (angular_z*self.L)/2
 
-
         # Publish the wheel velocities
         vr_msg = Float64()
         vl_msg = Float64()
@@ -66,7 +67,6 @@ class VelocityTranslator(Node):
         std_dev = np.sqrt(var)
 
         return np.random.normal(mean, std_dev) #Returns random error from Gaussian distribution
-
 
 def main(args=None):
     rclpy.init(args=args)

@@ -50,7 +50,7 @@ class Simulator(Node):
         self.v_right = 0.0
         
         # Robot width parameter (distance between wheels)
-        self.robot_model = self.declare_parameter('robot', 'normal.robot').value
+        self.robot_model = self.declare_parameter('robot', 'bad.robot').value
         self.robot = load_disc_robot(self.robot_model)
         self.wheel_separation = self.robot['wheels']['distance']
         

@@ -64,7 +64,7 @@ def disc_robot_urdf(robot):
 
 def generate_launch_description():
 
-    robot = load_disc_robot('ideal.robot') #HARDCODED
+    robot = load_disc_robot('bad.robot') #HARDCODED
 
     robot_urdf = robot['urdf']
 
