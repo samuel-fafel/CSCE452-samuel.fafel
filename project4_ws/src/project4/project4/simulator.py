@@ -50,7 +50,7 @@ class Simulator(Node):
         self.v_right = 0.0
         
         # Robot width parameter (distance between wheels)
-        self.wheel_separation = 0.5  # Example value, adjust to your robot's specification
+        self.wheel_separation = 0.3
         
         # Set the rate of pose update and the last update time
         self.rate = self.create_rate(10)  # 10 Hz
