@@ -34,6 +34,7 @@ class VelocityTranslator(Node):
         if ((current_time - self.last_update_error_time).seconds >= self.error_rate): #Determine a new error
             self.error_vl = self.wheel_error(self.variance_left)
             self.error_vr = self.wheel_error(self.variance_right)
+            self.last_update_error_time = current_time
 
     def cmd_vel_callback(self, msg):
         linear_x = msg.linear.x
