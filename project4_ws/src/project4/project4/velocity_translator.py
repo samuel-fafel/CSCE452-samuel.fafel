@@ -4,7 +4,6 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64
 from disc_robot.py import *
 import numpy as np
-from rclpy.clock import Clock
 
 
 class VelocityTranslator(Node):
