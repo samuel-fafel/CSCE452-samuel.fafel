@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64
-from disc_robot.py import *
+from project4.disc_robot import *
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 from math import sin, cos

@@ -2,27 +2,21 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64
-from disc_robot.py import *
+from project4.disc_robot import *
 import numpy as np
-
 
 class VelocityTranslator(Node):
 
     def __init__(self):
         super().__init__('velocity_translator')
         self.robot_model = self.declare_parameter('robot', 'normal.robot').value
-        self.cmd_vel_subscription = self.create_subscription(
-            Twist,
-            '/cmd_vel',
-            self.cmd_vel_callback,
-            10
-        )
+        self.cmd_vel_subscription = self.create_subscription(Twist,'/cmd_vel',self.cmd_vel_callback,10)
         self.vr_publisher = self.create_publisher(Float64, '/vr', 10)
         self.vl_publisher = self.create_publisher(Float64, '/vl', 10)
 
         #Set timer
-        self.last_update_time = self.get_clock().now
-        self.create_timer(0.1, cmd_vel_callback)
+        self.last_update_error_time = self.get_clock().now
+        self.create_timer(0.1, timer_callback)
 
         #Load robot info
         self.robot = load_disc_robot(self.robot_model)
@@ -34,20 +28,16 @@ class VelocityTranslator(Node):
         #Get initial errors
         self.error_vl = self.wheel_error(self.variance_left)
         self.error_vr = self.wheel_error(self.variance_right)
+    
+    def timer_callback(self):
+        current_time = Clock().now()
+        if ((current_time - self.last_update_error_time).seconds >= self.error_rate): #Determine a new error
+            self.error_vl = self.wheel_error(self.variance_left)
+            self.error_vr = self.wheel_error(self.variance_right)
 
     def cmd_vel_callback(self, msg):
         linear_x = msg.linear.x
         angular_z = msg.angular.z
-
-
-        #Determine a new error
-        current_time = self.get_clock().now
-
-        if ((current_time - self.last_update_time).seconds >= self.error_rate):
-            self.error_vl = self.wheel_error(self.variance_left)
-            self.error_vr = self.wheel_error(self.variance_right)
-
-        # Calculate wheel velocities based on linear and angular components
 
         #Determine special cases (linear.x or angular.z == 0)
         if(angular_z == 0.0): #No rotation

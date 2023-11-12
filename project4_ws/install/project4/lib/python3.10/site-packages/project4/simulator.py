@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64
+from project4.disc_robot import *
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
 from math import sin, cos
@@ -28,7 +28,7 @@ def euler_to_quaternion(roll, pitch, yaw):
 
 class Simulator(Node):
     def __init__(self):
-        super().__init__('simulator')        
+        super().__init__('simulator')
         # Subscribers for wheel velocities
         self.vl_subscriber = self.create_subscription(Float64, '/vl', self.vl_callback, 10)
         self.vr_subscriber = self.create_subscription(Float64, '/vr', self.vr_callback, 10)
@@ -50,7 +50,9 @@ class Simulator(Node):
         self.v_right = 0.0
         
         # Robot width parameter (distance between wheels)
-        self.wheel_separation = 0.5  # Example value, adjust to your robot's specification
+        self.robot_model = self.declare_parameter('robot', 'normal.robot').value
+        self.robot = load_disc_robot(self.robot_model)
+        self.wheel_separation = self.robot['wheels']['distance']
         
         # Set the rate of pose update and the last update time
         self.rate = self.create_rate(10)  # 10 Hz
