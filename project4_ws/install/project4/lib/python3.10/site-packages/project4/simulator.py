@@ -6,7 +6,7 @@ from project4.disc_robot import *
 from rclpy.clock import Clock
 
 from tf2_ros import TransformBroadcaster
-from math import sin, cos
+from math import sin, cos, ceil
 
 from project4.load_world import *
 from nav_msgs.msg import OccupancyGrid
@@ -97,7 +97,6 @@ class Simulator(Node):
             self.stop_robot()
     
     def stop_robot(self):
-        print("Stopped")
         vr_msg = Float64()
         vl_msg = Float64()
         vr_msg.data = 0.0
@@ -137,16 +136,22 @@ class Simulator(Node):
         theta += delta_theta
         
         # Normalize theta
-        theta = (self.theta + 3.14159265) % (2 * 3.14159265) - 3.14159265
+        theta = (theta + 3.14159265) % (2 * 3.14159265) - 3.14159265
         
         # COLLISION DETECTION
-        if self.is_in_collision():
+        boundary = self.world.get_resolution() / 3
+        x_boundary = boundary if delta_x > 0 else -boundary
+        y_boundary = boundary if delta_y > 0 else -boundary
+        if self.will_be_in_collision(x + x_boundary, y + y_boundary):
             print("Occupied Space")
+            self.stop_robot
         else:
-            self.publish_pose() # Publish the new pose
+            self.x = x
+            self.y = y
+            self.theta = theta
+        self.publish_pose() # Publish the new pose
 
     def publish_pose(self):
-        print("Publishing!")
         # Broadcast the transform from the world frame to the robot's frame
         t = TransformStamped()
         t.header.stamp = self.get_clock().now().to_msg()
@@ -160,15 +165,15 @@ class Simulator(Node):
         t.transform.rotation.y = q[1]
         t.transform.rotation.z = q[2]
         t.transform.rotation.w = q[3]
-
+        
         self.tf_broadcaster.sendTransform(t)
 
-    def is_in_collision(self):
+    def will_be_in_collision(self, new_x, new_y):
         resolution = self.world.get_resolution()
 
         # Convert robot position to grid coordinates
-        grid_x = int(self.x / resolution)
-        grid_y = int(self.y / resolution)
+        grid_x = int(new_x / resolution)
+        grid_y = int(new_y / resolution)
 
         # Determine the cells covered by the robot's footprint
         footprint_cells = self.calculate_footprint_cells(grid_x, grid_y, resolution)
@@ -179,7 +184,7 @@ class Simulator(Node):
             if cell[0] < 0 or cell[0] >= self.ogm.info.width or cell[1] < 0 or cell[1] >= self.ogm.info.height:
                 continue  # Skip cells outside of the grid
             
-            # Check occupancy value (indexing might need to be adjusted based on your grid storage)
+            # Check occupancy value
             index = cell[1] * self.ogm.info.width + cell[0]
             if self.ogm.data[index] == 100:
                 return True  # Collision detected
@@ -187,7 +192,7 @@ class Simulator(Node):
         return False  # No collision detected
 
     def calculate_footprint_cells(self, grid_x, grid_y, resolution):
-        # This is a simplified version for a circular robot. For different shapes, you'd calculate differently.
+        # This is for a circular robot.
         cells = []
         radius_in_cells = int(self.robot_radius / resolution)
         for x in range(grid_x - radius_in_cells, grid_x + radius_in_cells + 1):

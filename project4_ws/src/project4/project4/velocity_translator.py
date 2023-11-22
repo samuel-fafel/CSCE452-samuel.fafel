@@ -45,8 +45,6 @@ class VelocityTranslator(Node):
         linear_x = msg.linear.x
         angular_z = msg.angular.z
 
-        print(f"/cmd_vel: Linear X:{linear_x}, Angular Z: {angular_z}")
-
         #Determine special cases (linear.x or angular.z == 0)
         if(angular_z == 0.0): #No rotation
             vr = linear_x
