@@ -63,8 +63,7 @@ def disc_robot_urdf(robot):
                   """
 
 def generate_launch_description():
-
-    robot = load_disc_robot('bad.robot') #HARDCODED
+    robot = load_disc_robot('ideal.robot') #HARDCODED
 
     robot_urdf = robot['urdf']
 
@@ -93,7 +92,7 @@ def generate_launch_description():
             shell=True
         ) 
 
-    #event_handler = OnProcessExit(target_action = bag_play, on_exit = [EmitEvent(event=Shutdown())])
+    event_handler = OnProcessExit(target_action = bag_play, on_exit = [EmitEvent(event=Shutdown())])
 
     return LaunchDescription([
         Node(
@@ -116,8 +115,8 @@ def generate_launch_description():
             parameters=[{'robot_description' : robot_urdf}]
         ),
         bag_in,
-        bag_out,
+        #bag_out,
         bag_play,
-        bag_record,
-        #event_handler
+        #bag_record,
+        RegisterEventHandler(event_handler)
     ])

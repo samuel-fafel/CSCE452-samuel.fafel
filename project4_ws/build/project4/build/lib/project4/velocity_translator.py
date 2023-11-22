@@ -3,14 +3,17 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64
 from project4.disc_robot import *
-import numpy as np
 from rclpy.clock import Clock
+
+import numpy as np
 
 class VelocityTranslator(Node):
 
     def __init__(self):
         super().__init__('velocity_translator')
-        self.robot_model = self.declare_parameter('robot', 'bad.robot').value
+        self.model = 'ideal.robot'
+
+        self.robot_model = self.declare_parameter('robot', self.model).value
         self.cmd_vel_subscription = self.create_subscription(Twist,'/cmd_vel',self.cmd_vel_callback,10)
         self.vr_publisher = self.create_publisher(Float64, '/vr', 10)
         self.vl_publisher = self.create_publisher(Float64, '/vl', 10)
@@ -41,6 +44,8 @@ class VelocityTranslator(Node):
     def cmd_vel_callback(self, msg):
         linear_x = msg.linear.x
         angular_z = msg.angular.z
+
+        print(f"/cmd_vel: Linear X:{linear_x}, Angular Z: {angular_z}")
 
         #Determine special cases (linear.x or angular.z == 0)
         if(angular_z == 0.0): #No rotation
