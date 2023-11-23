@@ -11,6 +11,8 @@ from math import sin, cos, ceil
 from project4.load_world import *
 from nav_msgs.msg import OccupancyGrid
 
+import random
+
 def euler_to_quaternion(roll, pitch, yaw):
     """
     Convert an Euler angle to a quaternion.
@@ -34,7 +36,8 @@ class Simulator(Node):
     def __init__(self):
         super().__init__('simulator')
         self.model = 'ideal.robot'
-        self.world = 'rectangle.world'
+        worlds = ['brick.world', 'pillars.world', 'rectangle.world', 'custom.world']
+        self.world = worlds[random.randint(0,3)]
 
         # Subscribers for wheel velocities
         self.vl_subscriber = self.create_subscription(Float64, '/vl', self.vl_callback, 10)
@@ -139,11 +142,10 @@ class Simulator(Node):
         theta = (theta + 3.14159265) % (2 * 3.14159265) - 3.14159265
         
         # COLLISION DETECTION
-        boundary = self.world.get_resolution() / 3
+        boundary = self.world.get_resolution() / 2 # account for half of the resolution
         x_boundary = boundary if delta_x > 0 else -boundary
         y_boundary = boundary if delta_y > 0 else -boundary
         if self.will_be_in_collision(x + x_boundary, y + y_boundary):
-            print("Occupied Space")
             self.stop_robot
         else:
             self.x = x
