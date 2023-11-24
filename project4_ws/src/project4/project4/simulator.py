@@ -2,15 +2,13 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import TransformStamped
 from std_msgs.msg import Float64
-from project4.disc_robot import *
 from rclpy.clock import Clock
-
-from tf2_ros import TransformBroadcaster
-from math import sin, cos, ceil
-
+import numpy as np
+from project4.disc_robot import *
 from project4.load_world import *
 from nav_msgs.msg import OccupancyGrid
-
+from tf2_ros import TransformBroadcaster
+from math import sin, cos, ceil, floor
 import random
 
 def euler_to_quaternion(roll, pitch, yaw):
@@ -49,6 +47,13 @@ class Simulator(Node):
         # Publisher for Occupancy Grid
         self.map_publisher = self.create_publisher(OccupancyGrid, '/map', 10)
 
+        # Robot parameters
+        self.robot_model = self.declare_parameter('robot', self.model).value
+        self.robot = load_disc_robot(self.robot_model)
+        self.wheel_separation = self.robot['wheels']['distance']
+        self.robot_radius = self.robot['body']['radius']
+        self.robot_height = self.robot['body']['height']
+
         # Parse Initial Pose and Occupancy Grid
         self.world = World(self.world)
         self.occupancy_grid = self.world.get_occupancy_grid()
@@ -58,17 +63,10 @@ class Simulator(Node):
         self.theta = initial_pose[2]
         self.ogm = OccupancyGrid()
         self.publish_map()
-
+        
         # Wheel velocities
         self.v_left = 0.0
         self.v_right = 0.0
-        
-        # Robot parameters
-        self.robot_model = self.declare_parameter('robot', self.model).value
-        self.robot = load_disc_robot(self.robot_model)
-        self.wheel_separation = self.robot['wheels']['distance']
-        self.robot_radius = self.robot['body']['radius']
-        self.robot_height = self.robot['body']['height']
         
         # Set the rate of pose update and the last update time
         self.rate = self.create_rate(10)  # 10 Hz
@@ -141,9 +139,13 @@ class Simulator(Node):
         theta = (theta + 3.14159265) % (2 * 3.14159265) - 3.14159265
         
         # COLLISION DETECTION
-        boundary = self.world.get_resolution() / 2 # prevent actual intersection with boundary
-        x_boundary = boundary if delta_x > 0 else -boundary
-        y_boundary = boundary if delta_y > 0 else -boundary
+        x_boundary = 0
+        y_boundary = 0
+        if self.world.get_resolution() > self.robot_radius:
+            boundary = self.world.get_resolution() / 2 # prevent actual intersection with boundary
+            x_boundary = boundary if delta_x > 0 else -boundary
+            y_boundary = boundary if delta_y > 0 else -boundary
+
         if self.will_be_in_collision(x + x_boundary, y + y_boundary):
             self.stop_robot
         else:

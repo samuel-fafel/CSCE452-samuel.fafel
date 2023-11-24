@@ -2,9 +2,9 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64
-from project4.disc_robot import *
 from rclpy.clock import Clock
 import numpy as np
+from project4.disc_robot import *
 
 class VelocityTranslator(Node):
 
