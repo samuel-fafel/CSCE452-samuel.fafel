@@ -34,9 +34,9 @@ def euler_to_quaternion(roll, pitch, yaw):
 class Simulator(Node):
     def __init__(self):
         super().__init__('simulator')
-        self.model = 'ideal.robot'
-        worlds = ['brick.world', 'pillars.world', 'rectangle.world', 'custom.world']
-        self.world = worlds[random.randint(0,3)]
+        self.model = 'normal.robot'
+        worlds = ['brick.world', 'pillars.world', 'open.world', 'ell.world', 'custom.world']
+        self.world = 'brick.world'
 
         # Subscribers for wheel velocities
         self.vl_subscriber = self.create_subscription(Float64, '/vl', self.vl_callback, 10)
@@ -47,8 +47,6 @@ class Simulator(Node):
 
         # Publisher for Occupancy Grid
         self.map_publisher = self.create_publisher(OccupancyGrid, '/map', 10)
-
- 
 
         # Robot parameters
         self.robot_model = self.declare_parameter('robot', self.model).value
