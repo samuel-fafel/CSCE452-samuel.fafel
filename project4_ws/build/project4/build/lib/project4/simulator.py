@@ -33,9 +33,9 @@ def euler_to_quaternion(roll, pitch, yaw):
 class Simulator(Node):
     def __init__(self):
         super().__init__('simulator')
-        self.model = 'ideal.robot'
-        worlds = ['brick.world', 'pillars.world', 'rectangle.world', 'custom.world']
-        self.world = worlds[random.randint(0,3)]
+        self.model = 'normal.robot'
+        worlds = ['brick.world', 'pillars.world', 'open.world', 'ell.world', 'custom.world']
+        self.world = 'brick.world' #worlds[random.randint(0,3)]
 
         # Subscribers for wheel velocities
         self.vl_subscriber = self.create_subscription(Float64, '/vl', self.vl_callback, 10)
@@ -57,6 +57,7 @@ class Simulator(Node):
         # Parse Initial Pose and Occupancy Grid
         self.world = World(self.world)
         self.occupancy_grid = self.world.get_occupancy_grid()
+        self.resolution = self.world.get_resolution()
         initial_pose = self.world.get_initial_pose()
         self.x = initial_pose[0]
         self.y = initial_pose[1]
@@ -139,14 +140,7 @@ class Simulator(Node):
         theta = (theta + 3.14159265) % (2 * 3.14159265) - 3.14159265
         
         # COLLISION DETECTION
-        x_boundary = 0
-        y_boundary = 0
-        if self.world.get_resolution() > self.robot_radius:
-            boundary = self.world.get_resolution() / 2 # prevent actual intersection with boundary
-            x_boundary = boundary if delta_x > 0 else -boundary
-            y_boundary = boundary if delta_y > 0 else -boundary
-
-        if self.will_be_in_collision(x + x_boundary, y + y_boundary):
+        if self.check_collision(x, y):
             self.stop_robot
         else:
             self.x = x
@@ -171,38 +165,75 @@ class Simulator(Node):
         
         self.tf_broadcaster.sendTransform(t)
 
-    def will_be_in_collision(self, new_x, new_y):
-        resolution = self.world.get_resolution()
+    def find_obstacle_boundaries(self):
+        # This function finds the cells on the boundary of obstacles
+        # It would return a list of boundary cells or the lines representing their edges in the world frame
+        boundaries = []
+        width = self.ogm.info.width
+        height = self.ogm.info.height
+        data = self.ogm.data
 
-        # Convert robot position to grid coordinates
-        grid_x = int(new_x / resolution)
-        grid_y = int(new_y / resolution)
+        # Helper function to check if a cell is occupied
+        def is_occupied(x, y):
+            return data[y * width + x] == 100
 
-        # Determine the cells covered by the robot's footprint
-        footprint_cells = self.calculate_footprint_cells(grid_x, grid_y, resolution)
+        # Check the neighborhood of each cell
+        for y in range(height):
+            for x in range(width):
+                if not is_occupied(x, y):
+                    continue
 
-        # Check each cell in the footprint for collision
-        for cell in footprint_cells:
-            # Check grid bounds
-            if cell[0] < 0 or cell[0] >= self.ogm.info.width or cell[1] < 0 or cell[1] >= self.ogm.info.height:
-                continue  # Skip cells outside of the grid
-            
-            # Check occupancy value
-            index = cell[1] * self.ogm.info.width + cell[0]
-            if self.ogm.data[index] == 100:
+                # Check for adjacent free cells
+                neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
+                for nx, ny in neighbors:
+                    if 0 <= nx < width and 0 <= ny < height and not is_occupied(nx, ny):
+                        # Add the edge to the boundaries
+                        if nx == x - 1:  # Left edge
+                            boundaries.append(((x * self.resolution, y * self.resolution),
+                                            (x * self.resolution, (y + 1) * self.resolution)))
+                        if nx == x + 1:  # Right edge
+                            boundaries.append((((x + 1) * self.resolution, y * self.resolution),
+                                            ((x + 1) * self.resolution, (y + 1) * self.resolution)))
+                        if ny == y - 1:  # Bottom edge
+                            boundaries.append(((x * self.resolution, y * self.resolution),
+                                            ((x + 1) * self.resolution, y * self.resolution)))
+                        if ny == y + 1:  # Top edge
+                            boundaries.append(((x * self.resolution, (y + 1) * self.resolution),
+                                            ((x + 1) * self.resolution, (y + 1) * self.resolution)))
+        return boundaries
+
+    def convert_to_world_frame(self, grid_cell):
+        # This function converts a grid cell to world frame coordinates
+        world_x = grid_cell[0] * self.resolution
+        world_y = grid_cell[1] * self.resolution
+        return world_x, world_y
+
+    def point_line_distance(self, point, line_start, line_end):
+        # This function calculates the distance between a point and a line segment
+        # point: (px, py), line_start: (ax, ay), line_end: (bx, by)
+        line_vec = line_end - line_start
+        point_vec = point - line_start
+        line_len = np.linalg.norm(line_vec)
+        line_unitvec = line_vec / line_len
+        point_vec_scaled = point_vec / line_len
+        t = np.dot(line_unitvec, point_vec_scaled)    
+        if t < 0.0:
+            t = 0.0
+        elif t > 1.0:
+            t = 1.0
+        nearest = line_vec * t
+        distance = np.linalg.norm(point_vec - nearest)
+        return distance
+
+    def check_collision(self, robot_x, robot_y):
+        boundaries = self.find_obstacle_boundaries()
+        for boundary in boundaries:
+            print(boundary)
+            world_boundary = self.convert_to_world_frame(boundary)
+            distance = self.point_line_distance(np.array([robot_x, robot_y]), np.array(world_boundary[0]), np.array(world_boundary[1]))
+            if distance <= self.robot_radius * 1.1:
                 return True  # Collision detected
-
         return False  # No collision detected
-
-    def calculate_footprint_cells(self, grid_x, grid_y, resolution):
-        # This is for a circular robot.
-        cells = []
-        radius_in_cells = int(self.robot_radius / resolution)
-        for x in range(grid_x - radius_in_cells, grid_x + radius_in_cells + 1):
-            for y in range(grid_y - radius_in_cells, grid_y + radius_in_cells + 1):
-                if (x - grid_x)**2 + (y - grid_y)**2 <= radius_in_cells**2:
-                    cells.append((x, y))
-        return cells
 
 def main(args=None):
     rclpy.init(args=args)
