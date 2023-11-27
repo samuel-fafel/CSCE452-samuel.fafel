@@ -8,8 +8,7 @@ from project4.disc_robot import *
 from project4.load_world import *
 from nav_msgs.msg import OccupancyGrid
 from tf2_ros import TransformBroadcaster
-from sensor_msgs.msg import LaserScan
-from math import sin, cos, ceil, floor, nan
+from math import sin, cos, ceil, floor
 import random
 
 def euler_to_quaternion(roll, pitch, yaw):
@@ -48,17 +47,12 @@ class Simulator(Node):
         # Publisher for Occupancy Grid
         self.map_publisher = self.create_publisher(OccupancyGrid, '/map', 10)
 
- 
-
         # Robot parameters
         self.robot_model = self.declare_parameter('robot', self.model).value
         self.robot = load_disc_robot(self.robot_model)
         self.wheel_separation = self.robot['wheels']['distance']
         self.robot_radius = self.robot['body']['radius']
         self.robot_height = self.robot['body']['height']
-
-        # Publisher for LaserScan
-        self.laser_publisher = self.create_publisher(LaserScan, '/scan', self.robot["laser"]["rate"]) #???
 
         # Parse Initial Pose and Occupancy Grid
         self.world = World(self.world)
@@ -70,9 +64,6 @@ class Simulator(Node):
         self.ogm = OccupancyGrid()
         self.publish_map()
         
-        #Create Laser Scan Message
-        self.publish_laserscan()
-
         # Wheel velocities
         self.v_left = 0.0
         self.v_right = 0.0
@@ -87,75 +78,6 @@ class Simulator(Node):
 
         # Start the main loop
         self.create_timer(0.1, self.update_pose)  # 10 Hz
-
-    def calc_laser_points(self, angle_inc, point_count): #may need more parameters
-        laser_points = [] #List of all points in scan
-
-        #Get robot pose
-
-        #Loop for point_count times
-            #Expand in angle direction until hitting an obstacle
-            #   Need occupancy grid info
-
-            #Record length
-            #   Everything needs to be in meters
-        
-        
-        return laser_points
-
-    #Gives error value for laser
-    def laser_error(self, var):
-        mean = 1
-        std_dev = np.sqrt(var)
-
-        return np.random.normal(mean, std_dev) #Returns random error from Gaussian distribution
-
-    #Provides a check for a failed reading for laser 
-    def fail_test(self, fail_prob):
-        # Generate a random number between 0 and 1
-        random_number = random.uniform(0, 1)
-
-        # Check if the random number is less than the given probability
-        if random_number < fail_prob:
-            # The event occurs
-            return True
-        else:
-            # The event does not occur
-            return False
-    
-    def publish_laserscan(self):
-        # Create a LaserScan message
-        laser_scan_msg = LaserScan()
-
-        # Fill in the message fields
-        laser_scan_msg.header = Header(stamp=self.get_clock().now().to_msg(), frame_id="laser")
-        laser_scan_msg.angle_min = self.robot["laser"]["angle_min"]  # Minimum angle in radians 
-        laser_scan_msg.angle_max = self.robot["laser"]["angle_max"]   # Maximum angle in radians
-        laser_scan_msg.angle_increment = (laser_scan_msg.angle_max - laser_scan_msg.angle_min) / self.robot["laser"]["count"]  # Angular distance between measurements
-        laser_scan_msg.time_increment = 0.001  # Time between measurements in seconds (any value)
-        laser_scan_msg.scan_time = self.robot["laser"]["rate"]  # Time to complete a full scan in seconds
-        laser_scan_msg.range_min = self.robot["laser"]["range_min"]  # Minimum valid range in meters
-        laser_scan_msg.range_max = self.robot["laser"]["range_max"] # Maximum valid range in meters
-
-        range_vals = [] #Create function to calculate values
-
-        #Add errors to values
-        for i in range(len(range_vals)):
-            range_vals[i] = range_vals[i] * self.laser_error(self.robot["laser"]["error_variance"])
-
-        #Take out values outside of value range
-        range_vals = [val for val in range_vals if laser_scan_msg.range_min <= val <= laser_scan_msg.range_max]
-
-        #Replace values with NaN if failed
-        for i in range(len(range_vals)):
-            if (self.fail_test(self.robot["laser"]["fail_probability"])):
-                range_vals[i] = nan #math.nan
-
-        # Example range and intensity values
-        laser_scan_msg.ranges = range_vals #Find values from function
-        laser_scan_msg.intensities = [] #Blank since intensities not required
-
-        self.laser_publisher.publish(laser_scan_msg)
 
     def publish_map(self):
         # Create and Publish Occupancy Grid Message (ogm)
