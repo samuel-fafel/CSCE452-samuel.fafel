@@ -9,7 +9,8 @@ from project4.load_world import *
 from nav_msgs.msg import OccupancyGrid
 from tf2_ros import TransformBroadcaster
 from sensor_msgs.msg import LaserScan
-from math import sin, cos, ceil, floor, nan
+from std_msgs.msg import Header
+from math import sqrt, sin, cos, ceil, floor, nan
 import random
 
 def euler_to_quaternion(roll, pitch, yaw):
@@ -61,12 +62,17 @@ class Simulator(Node):
         # Parse Initial Pose and Occupancy Grid
         self.world = World(self.world)
         self.occupancy_grid = self.world.get_occupancy_grid()
+        self.grid2d = self.world.get_grid_2d()
+        self.resolution = self.world.get_resolution()
         initial_pose = self.world.get_initial_pose()
         self.x = initial_pose[0]
         self.y = initial_pose[1]
         self.theta = initial_pose[2]
         self.ogm = OccupancyGrid()
         self.publish_map()
+
+        # Compute Obstacle Boundaries
+        self.obstacle_corners = self.get_obstacle_corners()
         
         #Create Laser Scan Message
         self.publish_laserscan()
@@ -160,7 +166,7 @@ class Simulator(Node):
         self.ogm.header.stamp = self.get_clock().now().to_msg()
         self.ogm.header.frame_id = 'world'
 
-        self.ogm.info.resolution = self.world.get_resolution()
+        self.ogm.info.resolution = self.resolution
         self.ogm.info.width = self.world.get_dimensions()[0]
         self.ogm.info.height = self.world.get_dimensions()[1]
 
@@ -197,7 +203,7 @@ class Simulator(Node):
         current_time = self.get_clock().now()
         dt = (current_time - self.last_update_time).nanoseconds / 1e9
         self.last_update_time = current_time
-        
+
         # Calculate linear and angular velocities
         v_linear = (self.v_right + self.v_left) / 2.0
         v_angular = (self.v_right - self.v_left) / self.wheel_separation
@@ -215,16 +221,7 @@ class Simulator(Node):
         theta = (theta + 3.14159265) % (2 * 3.14159265) - 3.14159265
         
         # COLLISION DETECTION
-        x_boundary = 0
-        y_boundary = 0
-        if self.world.get_resolution() > self.robot_radius:
-            boundary = self.world.get_resolution() / 2 # prevent actual intersection with boundary
-            x_boundary = boundary if delta_x > 0 else -boundary
-            y_boundary = boundary if delta_y > 0 else -boundary
-
-        if self.will_be_in_collision(x + x_boundary, y + y_boundary):
-            self.stop_robot
-        else:
+        if not self.will_be_in_collision(x, y):
             self.x = x
             self.y = y
             self.theta = theta
@@ -247,38 +244,46 @@ class Simulator(Node):
         
         self.tf_broadcaster.sendTransform(t)
 
-    def will_be_in_collision(self, new_x, new_y):
-        resolution = self.world.get_resolution()
+    # Function to convert the array into a list of obstacle corner points
+    def get_obstacle_corners(self):
+        # List to hold the coordinates of corners
+        corners = []
+        rows = self.ogm.info.height
+        cols = self.ogm.info.width
+        
+        # Iterate through the array to find obstacles
+        for i in range(rows):
+            for j in range(cols):
+                # Check if we have an obstacle
+                if self.grid2d[i][j] == 100:
+                    # Add the coordinates of the corners of the obstacle cell
+                    corners.append((round(j * self.resolution, 2), round(i * self.resolution, 2)))  # Bottom Left Corner
+                    corners.append((round((j + 1) * self.resolution, 2), round(i * self.resolution,2)))  # Bottom Right Corner
+                    corners.append((round(j * self.resolution,2), round((i + 1) * self.resolution,2)))  # Top Left Corner
+                    corners.append((round((j + 1) * self.resolution,2), round((i + 1) * self.resolution,2)))  # Top Right Corner
+        
+        # Remove duplicates by converting the list to a set, then back to a list
+        unique_corners = list(set(corners))
+        
+        # Sort the list of corners
+        unique_corners.sort()
 
-        # Convert robot position to grid coordinates
-        grid_x = int(new_x / resolution)
-        grid_y = int(new_y / resolution)
+        index = 0
+        for corner in unique_corners:
+            print(corner, end=' ')
+            if index == self.ogm.info.width:
+                index = 0
+                print()
+            index += 1
 
-        # Determine the cells covered by the robot's footprint
-        footprint_cells = self.calculate_footprint_cells(grid_x, grid_y, resolution)
+        return unique_corners
+    
+    def will_be_in_collision(self, x, y):
+        for corner in self.obstacle_corners:
+            if sqrt((x-corner[0])**2 + (y-corner[1])**2) < self.robot_radius:
+                return True
+        return False
 
-        # Check each cell in the footprint for collision
-        for cell in footprint_cells:
-            # Check grid bounds
-            if cell[0] < 0 or cell[0] >= self.ogm.info.width or cell[1] < 0 or cell[1] >= self.ogm.info.height:
-                continue  # Skip cells outside of the grid
-            
-            # Check occupancy value
-            index = cell[1] * self.ogm.info.width + cell[0]
-            if self.ogm.data[index] == 100:
-                return True  # Collision detected
-
-        return False  # No collision detected
-
-    def calculate_footprint_cells(self, grid_x, grid_y, resolution):
-        # This is for a circular robot.
-        cells = []
-        radius_in_cells = int(self.robot_radius / resolution)
-        for x in range(grid_x - radius_in_cells, grid_x + radius_in_cells + 1):
-            for y in range(grid_y - radius_in_cells, grid_y + radius_in_cells + 1):
-                if (x - grid_x)**2 + (y - grid_y)**2 <= radius_in_cells**2:
-                    cells.append((x, y))
-        return cells
 
 def main(args=None):
     rclpy.init(args=args)

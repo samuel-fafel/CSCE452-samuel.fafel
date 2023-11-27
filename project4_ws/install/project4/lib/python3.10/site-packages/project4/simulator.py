@@ -8,7 +8,9 @@ from project4.disc_robot import *
 from project4.load_world import *
 from nav_msgs.msg import OccupancyGrid
 from tf2_ros import TransformBroadcaster
-from math import sin, cos, ceil, floor
+from sensor_msgs.msg import LaserScan
+from std_msgs.msg import Header
+from math import sqrt, sin, cos, ceil, floor, nan
 import random
 
 def euler_to_quaternion(roll, pitch, yaw):
@@ -35,7 +37,7 @@ class Simulator(Node):
         super().__init__('simulator')
         self.model = 'normal.robot'
         worlds = ['brick.world', 'pillars.world', 'open.world', 'ell.world', 'custom.world']
-        self.world = 'brick.world' #worlds[random.randint(0,3)]
+        self.world = 'brick.world'
 
         # Subscribers for wheel velocities
         self.vl_subscriber = self.create_subscription(Float64, '/vl', self.vl_callback, 10)
@@ -54,9 +56,13 @@ class Simulator(Node):
         self.robot_radius = self.robot['body']['radius']
         self.robot_height = self.robot['body']['height']
 
+        # Publisher for LaserScan
+        self.laser_publisher = self.create_publisher(LaserScan, '/scan', self.robot["laser"]["rate"]) #???
+
         # Parse Initial Pose and Occupancy Grid
         self.world = World(self.world)
         self.occupancy_grid = self.world.get_occupancy_grid()
+        self.grid2d = self.world.get_grid_2d()
         self.resolution = self.world.get_resolution()
         initial_pose = self.world.get_initial_pose()
         self.x = initial_pose[0]
@@ -64,7 +70,13 @@ class Simulator(Node):
         self.theta = initial_pose[2]
         self.ogm = OccupancyGrid()
         self.publish_map()
+
+        # Compute Obstacle Boundaries
+        self.obstacle_corners = self.get_obstacle_corners()
         
+        #Create Laser Scan Message
+        #self.publish_laserscan()
+
         # Wheel velocities
         self.v_left = 0.0
         self.v_right = 0.0
@@ -80,12 +92,81 @@ class Simulator(Node):
         # Start the main loop
         self.create_timer(0.1, self.update_pose)  # 10 Hz
 
+    def calc_laser_points(self, angle_inc, point_count): #may need more parameters
+        laser_points = [] #List of all points in scan
+
+        #Get robot pose
+
+        #Loop for point_count times
+            #Expand in angle direction until hitting an obstacle
+            #   Need occupancy grid info
+
+            #Record length
+            #   Everything needs to be in meters
+        
+        
+        return laser_points
+
+    #Gives error value for laser
+    def laser_error(self, var):
+        mean = 1
+        std_dev = np.sqrt(var)
+
+        return np.random.normal(mean, std_dev) #Returns random error from Gaussian distribution
+
+    #Provides a check for a failed reading for laser 
+    def fail_test(self, fail_prob):
+        # Generate a random number between 0 and 1
+        random_number = random.uniform(0, 1)
+
+        # Check if the random number is less than the given probability
+        if random_number < fail_prob:
+            # The event occurs
+            return True
+        else:
+            # The event does not occur
+            return False
+    
+    def publish_laserscan(self):
+        # Create a LaserScan message
+        laser_scan_msg = LaserScan()
+
+        # Fill in the message fields
+        laser_scan_msg.header = Header(stamp=self.get_clock().now().to_msg(), frame_id="laser")
+        laser_scan_msg.angle_min = self.robot["laser"]["angle_min"]  # Minimum angle in radians 
+        laser_scan_msg.angle_max = self.robot["laser"]["angle_max"]   # Maximum angle in radians
+        laser_scan_msg.angle_increment = (laser_scan_msg.angle_max - laser_scan_msg.angle_min) / self.robot["laser"]["count"]  # Angular distance between measurements
+        laser_scan_msg.time_increment = 0.001  # Time between measurements in seconds (any value)
+        laser_scan_msg.scan_time = self.robot["laser"]["rate"]  # Time to complete a full scan in seconds
+        laser_scan_msg.range_min = self.robot["laser"]["range_min"]  # Minimum valid range in meters
+        laser_scan_msg.range_max = self.robot["laser"]["range_max"] # Maximum valid range in meters
+
+        range_vals = [] #Create function to calculate values
+
+        #Add errors to values
+        for i in range(len(range_vals)):
+            range_vals[i] = range_vals[i] * self.laser_error(self.robot["laser"]["error_variance"])
+
+        #Take out values outside of value range
+        range_vals = [val for val in range_vals if laser_scan_msg.range_min <= val <= laser_scan_msg.range_max]
+
+        #Replace values with NaN if failed
+        for i in range(len(range_vals)):
+            if (self.fail_test(self.robot["laser"]["fail_probability"])):
+                range_vals[i] = nan #math.nan
+
+        # Example range and intensity values
+        laser_scan_msg.ranges = range_vals #Find values from function
+        laser_scan_msg.intensities = [] #Blank since intensities not required
+
+        self.laser_publisher.publish(laser_scan_msg)
+
     def publish_map(self):
         # Create and Publish Occupancy Grid Message (ogm)
         self.ogm.header.stamp = self.get_clock().now().to_msg()
         self.ogm.header.frame_id = 'world'
 
-        self.ogm.info.resolution = self.world.get_resolution()
+        self.ogm.info.resolution = self.resolution
         self.ogm.info.width = self.world.get_dimensions()[0]
         self.ogm.info.height = self.world.get_dimensions()[1]
 
@@ -122,7 +203,7 @@ class Simulator(Node):
         current_time = self.get_clock().now()
         dt = (current_time - self.last_update_time).nanoseconds / 1e9
         self.last_update_time = current_time
-        
+
         # Calculate linear and angular velocities
         v_linear = (self.v_right + self.v_left) / 2.0
         v_angular = (self.v_right - self.v_left) / self.wheel_separation
@@ -140,9 +221,7 @@ class Simulator(Node):
         theta = (theta + 3.14159265) % (2 * 3.14159265) - 3.14159265
         
         # COLLISION DETECTION
-        if self.check_collision(x, y):
-            self.stop_robot
-        else:
+        if not self.will_be_in_collision(x, y):
             self.x = x
             self.y = y
             self.theta = theta
@@ -165,75 +244,46 @@ class Simulator(Node):
         
         self.tf_broadcaster.sendTransform(t)
 
-    def find_obstacle_boundaries(self):
-        # This function finds the cells on the boundary of obstacles
-        # It would return a list of boundary cells or the lines representing their edges in the world frame
-        boundaries = []
-        width = self.ogm.info.width
-        height = self.ogm.info.height
-        data = self.ogm.data
+    # Function to convert the array into a list of obstacle corner points
+    def get_obstacle_corners(self):
+        # List to hold the coordinates of corners
+        corners = []
+        rows = self.ogm.info.height
+        cols = self.ogm.info.width
+        
+        # Iterate through the array to find obstacles
+        for i in range(rows):
+            for j in range(cols):
+                # Check if we have an obstacle
+                if self.grid2d[i][j] == 100:
+                    # Add the coordinates of the corners of the obstacle cell
+                    corners.append((round(j * self.resolution, 2), round(i * self.resolution, 2)))  # Bottom Left Corner
+                    corners.append((round((j + 1) * self.resolution, 2), round(i * self.resolution,2)))  # Bottom Right Corner
+                    corners.append((round(j * self.resolution,2), round((i + 1) * self.resolution,2)))  # Top Left Corner
+                    corners.append((round((j + 1) * self.resolution,2), round((i + 1) * self.resolution,2)))  # Top Right Corner
+        
+        # Remove duplicates by converting the list to a set, then back to a list
+        unique_corners = list(set(corners))
+        
+        # Sort the list of corners
+        unique_corners.sort()
 
-        # Helper function to check if a cell is occupied
-        def is_occupied(x, y):
-            return data[y * width + x] == 100
+        index = 0
+        for corner in unique_corners:
+            print(corner, end=' ')
+            if index == self.ogm.info.width:
+                index = 0
+                print()
+            index += 1
 
-        # Check the neighborhood of each cell
-        for y in range(height):
-            for x in range(width):
-                if not is_occupied(x, y):
-                    continue
+        return unique_corners
+    
+    def will_be_in_collision(self, x, y):
+        for corner in self.obstacle_corners:
+            if sqrt((x-corner[0])**2 + (y-corner[1])**2) < self.robot_radius:
+                return True
+        return False
 
-                # Check for adjacent free cells
-                neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
-                for nx, ny in neighbors:
-                    if 0 <= nx < width and 0 <= ny < height and not is_occupied(nx, ny):
-                        # Add the edge to the boundaries
-                        if nx == x - 1:  # Left edge
-                            boundaries.append(((x * self.resolution, y * self.resolution),
-                                            (x * self.resolution, (y + 1) * self.resolution)))
-                        if nx == x + 1:  # Right edge
-                            boundaries.append((((x + 1) * self.resolution, y * self.resolution),
-                                            ((x + 1) * self.resolution, (y + 1) * self.resolution)))
-                        if ny == y - 1:  # Bottom edge
-                            boundaries.append(((x * self.resolution, y * self.resolution),
-                                            ((x + 1) * self.resolution, y * self.resolution)))
-                        if ny == y + 1:  # Top edge
-                            boundaries.append(((x * self.resolution, (y + 1) * self.resolution),
-                                            ((x + 1) * self.resolution, (y + 1) * self.resolution)))
-        return boundaries
-
-    def convert_to_world_frame(self, grid_cell):
-        # This function converts a grid cell to world frame coordinates
-        world_x = grid_cell[0] * self.resolution
-        world_y = grid_cell[1] * self.resolution
-        return world_x, world_y
-
-    def point_line_distance(self, point, line_start, line_end):
-        # This function calculates the distance between a point and a line segment
-        # point: (px, py), line_start: (ax, ay), line_end: (bx, by)
-        line_vec = line_end - line_start
-        point_vec = point - line_start
-        line_len = np.linalg.norm(line_vec)
-        line_unitvec = line_vec / line_len
-        point_vec_scaled = point_vec / line_len
-        t = np.dot(line_unitvec, point_vec_scaled)    
-        if t < 0.0:
-            t = 0.0
-        elif t > 1.0:
-            t = 1.0
-        nearest = line_vec * t
-        distance = np.linalg.norm(point_vec - nearest)
-        return distance
-
-    def check_collision(self, robot_x, robot_y):
-        boundaries = self.find_obstacle_boundaries()
-        for boundary in boundaries:
-            print(boundary)
-            world_boundary = self.convert_to_world_frame(boundary)
-            distance = self.point_line_distance(np.array([robot_x, robot_y]), np.array(world_boundary[0]), np.array(world_boundary[1]))
-            if distance <= self.robot_radius * 1.1:
-                return True  # Collision detected
-        return False  # No collision detected
 
 def main(args=None):
     rclpy.init(args=args)
