@@ -10,7 +10,7 @@ from nav_msgs.msg import OccupancyGrid
 from tf2_ros import TransformBroadcaster
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Header
-from math import sqrt, sin, cos, ceil, floor, nan
+from math import sqrt, sin, cos, ceil, floor, nan, radians
 from itertools import combinations
 import random
 
@@ -101,7 +101,7 @@ class Simulator(Node):
         self.obstacle_corners = self.get_obstacle_corners()
         
         #Create Laser Scan Message
-        #self.publish_laserscan()
+        self.create_timer(self.robot["laser"]["rate"], self.publish_laserscan)
 
         # Wheel velocities
         self.v_left = 0.0
@@ -118,20 +118,48 @@ class Simulator(Node):
         # Start the main loop
         self.create_timer(0.1, self.update_pose)  # 10 Hz
 
-    def calc_laser_points(self, angle_inc, point_count): #may need more parameters
-        laser_points = [] #List of all points in scan
+    def calc_laser_points(self, point_count): #may need more parameters
+        # Convert occupancy grid into numpy array to help with calculation
+        np_grid = np.array(self.world.get_grid_2d())
+        # Convert fov to radians
+        fov_rad = radians(self.robot["laser"]["angle_max"] - self.robot["laser"]["angle_min"])
 
-        #Get robot pose
+        # Initialize the list of laser scan ranges
+        ranges = []
 
-        #Loop for point_count times
-            #Expand in angle direction until hitting an obstacle
-            #   Need occupancy grid info
+        # Calculate the angular increment between each laser beam
+        angular_increment = fov_rad / (point_count - 1)
 
-            #Record length
-            #   Everything needs to be in meters
+        #Get resolution
+        grid_resolution = self.world.get_resolution()
+
+        # Iterate through each laser beam
+        for i in range(point_count):
+            # Calculate the current angle of the laser beam
+            angle = self.theta - (fov_rad / 2.0) + i * angular_increment
+
+            # Initialize the current range to the maximum range
+            current_range = self.robot["laser"]["range_max"]
+
         
-        
-        return laser_points
+            # Iterate along the laser beam until the maximum range is reached or an obstacle is encountered
+            for r in np.arange(0.0, self.robot["laser"]["range_max"], grid_resolution):
+                # Calculate the coordinates of the point along the laser beam
+                x = int(self.x + r * cos(angle) / grid_resolution)
+                y = int(self.y + r * sin(angle) / grid_resolution)
+
+                # Check if the point is within the occupancy grid bounds
+                if 0 <= x < np_grid.shape[0] and 0 <= y < np_grid.shape[1]:
+                    # Check if the point is occupied
+                    if np_grid[x, y] == 100:
+                        current_range = r
+                        break
+
+            # Convert the range from grid coordinates to meters
+            current_range_meters = current_range * grid_resolution
+            ranges.append(current_range_meters)
+
+        return ranges
 
     #Gives error value for laser
     def laser_error(self, var):
@@ -162,12 +190,12 @@ class Simulator(Node):
         laser_scan_msg.angle_min = self.robot["laser"]["angle_min"]  # Minimum angle in radians 
         laser_scan_msg.angle_max = self.robot["laser"]["angle_max"]   # Maximum angle in radians
         laser_scan_msg.angle_increment = (laser_scan_msg.angle_max - laser_scan_msg.angle_min) / self.robot["laser"]["count"]  # Angular distance between measurements
-        laser_scan_msg.time_increment = 0.001  # Time between measurements in seconds (any value)
-        laser_scan_msg.scan_time = self.robot["laser"]["rate"]  # Time to complete a full scan in seconds
+        laser_scan_msg.time_increment = 0.04  # Time between measurements in seconds (any value)
+        laser_scan_msg.scan_time = float(self.robot["laser"]["rate"])  # Time to complete a full scan in seconds
         laser_scan_msg.range_min = self.robot["laser"]["range_min"]  # Minimum valid range in meters
         laser_scan_msg.range_max = self.robot["laser"]["range_max"] # Maximum valid range in meters
 
-        range_vals = [] #Create function to calculate values
+        range_vals = self.calc_laser_points(self.robot["laser"]["count"]) #Create function to calculate values
 
         #Add errors to values
         for i in range(len(range_vals)):
