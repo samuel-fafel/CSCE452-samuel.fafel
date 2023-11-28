@@ -11,6 +11,7 @@ from tf2_ros import TransformBroadcaster
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Header
 from math import sqrt, sin, cos, ceil, floor, nan
+from itertools import combinations
 import random
 
 def euler_to_quaternion(roll, pitch, yaw):
@@ -32,12 +33,37 @@ def euler_to_quaternion(roll, pitch, yaw):
 
     return qx, qy, qz, qw
 
+# Define the function to calculate the distance from a point to a line segment
+def point_to_line_distance(point, line_segment):
+    # Unpack the point and line segment
+    (x0, y0) = point
+    (x1, y1), (x2, y2) = line_segment
+
+    # Calculate the differences
+    dx = x2 - x1
+    dy = y2 - y1
+
+    # Calculate the t that minimizes the distance
+    t = ((x0 - x1) * dx + (y0 - y1) * dy) / (dx * dx + dy * dy)
+
+    # Restrict t to the segment
+    t = max(0, min(1, t))
+
+    # Calculate the nearest point on the segment
+    nearest_x = x1 + t * dx
+    nearest_y = y1 + t * dy
+
+    # Calculate the distance from the point to the nearest point on the segment
+    distance = np.sqrt((nearest_x - x0) ** 2 + (nearest_y - y0) ** 2)
+
+    return distance
+
 class Simulator(Node):
     def __init__(self):
         super().__init__('simulator')
         self.model = 'normal.robot'
         worlds = ['brick.world', 'pillars.world', 'open.world', 'ell.world', 'custom.world']
-        self.world = 'brick.world'
+        self.world = 'pillars.world'
 
         # Subscribers for wheel velocities
         self.vl_subscriber = self.create_subscription(Float64, '/vl', self.vl_callback, 10)
@@ -267,20 +293,11 @@ class Simulator(Node):
         
         # Sort the list of corners
         unique_corners.sort()
-
-        index = 0
-        for corner in unique_corners:
-            print(corner, end=' ')
-            if index == self.ogm.info.width:
-                index = 0
-                print()
-            index += 1
-
         return unique_corners
     
     def will_be_in_collision(self, x, y):
         for corner in self.obstacle_corners:
-            if sqrt((x-corner[0])**2 + (y-corner[1])**2) < self.robot_radius:
+            if sqrt((x-corner[0])**2 + (y-corner[1])**2) <= self.robot_radius:
                 return True
         return False
 
