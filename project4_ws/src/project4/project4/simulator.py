@@ -122,7 +122,7 @@ class Simulator(Node):
         # Convert occupancy grid into numpy array to help with calculation
         np_grid = np.array(self.world.get_grid_2d())
         # Convert fov to radians
-        fov_rad = radians(self.robot["laser"]["angle_max"] - self.robot["laser"]["angle_min"])
+        fov_rad = self.robot["laser"]["angle_max"] - self.robot["laser"]["angle_min"]
 
         # Initialize the list of laser scan ranges
         ranges = []
@@ -143,7 +143,7 @@ class Simulator(Node):
 
         
             # Iterate along the laser beam until the maximum range is reached or an obstacle is encountered
-            for r in np.arange(0.0, self.robot["laser"]["range_max"], grid_resolution):
+            for r in np.arange(0.0, self.robot["laser"]["range_max"] + grid_resolution, grid_resolution):
                 # Calculate the coordinates of the point along the laser beam
                 x = int(self.x + r * cos(angle) / grid_resolution)
                 y = int(self.y + r * sin(angle) / grid_resolution)
