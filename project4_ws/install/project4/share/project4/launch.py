@@ -84,7 +84,8 @@ def generate_launch_description():
                 '/robot_state_publisher', 
                 '/cmd_vel',
                 '/vl', 
-                '/vr', 
+                '/vr',
+                '/scan',
                 '/tf',
                 '/tf_static'
             ],
