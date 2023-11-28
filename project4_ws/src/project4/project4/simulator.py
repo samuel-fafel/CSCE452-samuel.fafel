@@ -33,6 +33,41 @@ def euler_to_quaternion(roll, pitch, yaw):
 
     return qx, qy, qz, qw
 
+def bresenham_line(x0, y0, x1, y1, resolution):
+    """
+    Bresenham's Line Algorithm
+    Produces a list of tuples from start and end
+
+    :param x0, y0: The start coordinate
+    :param x1, y1: The end coordinate
+    :param resolution: The resolution of the grid
+    """
+    # Convert world coordinates to grid coordinates
+    x0, y0 = int(x0 / resolution), int(y0 / resolution)
+    x1, y1 = int(x1 / resolution), int(y1 / resolution)
+
+    points = []
+    dx = abs(x1 - x0)
+    dy = abs(y1 - y0)
+    x, y = x0, y0
+    sx = -1 if x0 > x1 else 1
+    sy = -1 if y0 > y1 else 1
+    err = dx - dy
+
+    while True:
+        points.append((x * resolution, y * resolution))
+        if x == x1 and y == y1:
+            break
+        e2 = 2 * err
+        if e2 > -dy:
+            err -= dy
+            x += sx
+        if e2 < dx:
+            err += dx
+            y += sy
+
+    return points
+
 # Define the function to calculate the distance from a point to a line segment
 def point_to_line_distance(point, line_segment):
     # Unpack the point and line segment
@@ -122,17 +157,17 @@ class Simulator(Node):
     def calc_laser_points(self, point_count): #may need more parameters
         # Convert fov to radians
         fov_rad = self.robot["laser"]["angle_max"] - self.robot["laser"]["angle_min"]
+        
+        # Calculate the angular increment between each laser beam
+        angular_increment = fov_rad / (point_count - 1)
 
         # Initialize the list of laser scan ranges
         ranges = []
 
-        # Calculate the angular increment between each laser beam
-        angular_increment = fov_rad / (point_count - 1)
-
         # Iterate through each laser beam
         for i in range(point_count):
             # Calculate the current angle of the laser beam
-            angle = self.theta - (fov_rad / 2.0) + i * angular_increment
+            angle = self.robot['laser']['angle_min'] + i*angular_increment
             pot_ranges = []
 
             #Iterate through obstacles
@@ -146,7 +181,6 @@ class Simulator(Node):
 
                 true_angle_diff = atan2(sin(angle_looking), cos(angle_looking)) #Keep bounds between pi and -pi
                 
-
                 #Get the correct difference for the current angle reading
                 if ((angle-0.05) <= true_angle_diff <= (angle+0.05)):
                     distance = sqrt((x_obs - self.x)**2 + (y_obs - self.y)**2)
@@ -156,8 +190,46 @@ class Simulator(Node):
             if (len(pot_ranges) > 0):
                 ranges.append(min(pot_ranges))
                     
-
         return ranges
+
+    def calculate_scan_distances(self, point_count):
+        # Convert fov to radians
+        fov_rad = self.robot["laser"]["angle_max"] - self.robot["laser"]["angle_min"]
+        
+        # Calculate the angular increment between each laser beam
+        angle_increment = fov_rad / (point_count - 1)
+
+        distances = []
+        for i in range(point_count):
+            angle = self.robot['laser']['angle_min'] + i * angle_increment*2
+            distance = self.cast_ray(angle)
+            distances.append(distance)
+        return distances
+
+    def cast_ray(self, angle):
+        # Ray's starting point (robot's position)
+        ray_x, ray_y = self.x, self.y
+        range_max = self.robot['laser']['range_max']
+
+        # Determine the end point of the ray based on the laser's max range
+        ray_end_x = ray_x + range_max * cos(angle + self.theta)
+        ray_end_y = ray_y + range_max * sin(angle + self.theta)
+
+        # Iterate over points along the ray
+        for current_point in bresenham_line(ray_x, ray_y, ray_end_x, ray_end_y, self.resolution):
+            if self.is_occupied(*current_point):
+                # Calculate the distance from the robot to this point
+                distance = sqrt((current_point[0] - self.x)**2 + (current_point[1] - self.y)**2)
+                return distance  # Return the distance to the first occupied point
+
+        return self.range_max  # If no obstacle is found, return max range
+
+    def is_occupied(self, x, y):
+        grid_x = int(x / self.resolution)
+        grid_y = int(y / self.resolution)
+        if self.grid2d[grid_y][grid_x] == 100:
+            return True
+        return False
 
     #Gives error value for laser
     def laser_error(self, var):
@@ -193,7 +265,7 @@ class Simulator(Node):
         laser_scan_msg.range_min = self.robot["laser"]["range_min"]  # Minimum valid range in meters
         laser_scan_msg.range_max = self.robot["laser"]["range_max"] # Maximum valid range in meters
 
-        range_vals = self.calc_laser_points(self.robot["laser"]["count"]) #Create function to calculate values
+        range_vals = self.calculate_scan_distances(self.robot["laser"]["count"]) #Create function to calculate values
 
         #Add errors to values
         for i in range(len(range_vals)):
