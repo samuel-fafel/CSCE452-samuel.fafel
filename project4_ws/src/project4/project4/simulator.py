@@ -10,7 +10,7 @@ from nav_msgs.msg import OccupancyGrid
 from tf2_ros import TransformBroadcaster
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Header
-from math import sqrt, sin, cos, ceil, floor, nan, radians
+from math import sqrt, sin, cos, ceil, floor, nan, atan2
 from itertools import combinations
 import random
 
@@ -63,7 +63,8 @@ class Simulator(Node):
         super().__init__('simulator')
         self.model = 'normal.robot'
         worlds = ['brick.world', 'pillars.world', 'open.world', 'ell.world', 'custom.world']
-        self.world = 'pillars.world'
+        #self.world = 'pillars.world'
+        self.world = worlds[random.randint(0,4)]
 
         # Subscribers for wheel velocities
         self.vl_subscriber = self.create_subscription(Float64, '/vl', self.vl_callback, 10)
@@ -83,7 +84,7 @@ class Simulator(Node):
         self.robot_height = self.robot['body']['height']
 
         # Publisher for LaserScan
-        self.laser_publisher = self.create_publisher(LaserScan, '/scan', self.robot["laser"]["rate"]) #???
+        self.laser_publisher = self.create_publisher(LaserScan, '/scan', 1)
 
         # Parse Initial Pose and Occupancy Grid
         self.world = World(self.world)
@@ -119,8 +120,6 @@ class Simulator(Node):
         self.create_timer(0.1, self.update_pose)  # 10 Hz
 
     def calc_laser_points(self, point_count): #may need more parameters
-        # Convert occupancy grid into numpy array to help with calculation
-        np_grid = np.array(self.world.get_grid_2d())
         # Convert fov to radians
         fov_rad = self.robot["laser"]["angle_max"] - self.robot["laser"]["angle_min"]
 
@@ -130,34 +129,33 @@ class Simulator(Node):
         # Calculate the angular increment between each laser beam
         angular_increment = fov_rad / (point_count - 1)
 
-        #Get resolution
-        grid_resolution = self.world.get_resolution()
-
         # Iterate through each laser beam
         for i in range(point_count):
             # Calculate the current angle of the laser beam
             angle = self.theta - (fov_rad / 2.0) + i * angular_increment
+            pot_ranges = []
 
-            # Initialize the current range to the maximum range
-            current_range = self.robot["laser"]["range_max"]
+            #Iterate through obstacles
+            for obs in self.obstacle_corners:
+                x_obs = obs[0]
+                y_obs = obs[1]
 
-        
-            # Iterate along the laser beam until the maximum range is reached or an obstacle is encountered
-            for r in np.arange(0.0, self.robot["laser"]["range_max"] + grid_resolution, grid_resolution):
-                # Calculate the coordinates of the point along the laser beam
-                x = int(self.x + r * cos(angle) / grid_resolution)
-                y = int(self.y + r * sin(angle) / grid_resolution)
+                angle_diff = atan2(y_obs - self.y, x_obs - self.x) #Find angle difference between
 
-                # Check if the point is within the occupancy grid bounds
-                if 0 <= x < np_grid.shape[0] and 0 <= y < np_grid.shape[1]:
-                    # Check if the point is occupied
-                    if np_grid[x, y] == 100:
-                        current_range = r
-                        break
+                angle_looking = angle_diff - self.theta #Find difference relative to robot's theta
 
-            # Convert the range from grid coordinates to meters
-            current_range_meters = current_range * grid_resolution
-            ranges.append(current_range_meters)
+                true_angle_diff = atan2(sin(angle_looking), cos(angle_looking)) #Keep bounds between pi and -pi
+                
+
+                #Get the correct difference for the current angle reading
+                if ((angle-0.05) <= true_angle_diff <= (angle+0.05)):
+                    distance = sqrt((x_obs - self.x)**2 + (y_obs - self.y)**2)
+                    pot_ranges.append(distance)
+                
+            #Choose closest range out of pot_ranges
+            if (len(pot_ranges) > 0):
+                ranges.append(min(pot_ranges))
+                    
 
         return ranges
 
@@ -189,7 +187,7 @@ class Simulator(Node):
         laser_scan_msg.header = Header(stamp=self.get_clock().now().to_msg(), frame_id="laser")
         laser_scan_msg.angle_min = self.robot["laser"]["angle_min"]  # Minimum angle in radians 
         laser_scan_msg.angle_max = self.robot["laser"]["angle_max"]   # Maximum angle in radians
-        laser_scan_msg.angle_increment = (laser_scan_msg.angle_max - laser_scan_msg.angle_min) / self.robot["laser"]["count"]  # Angular distance between measurements
+        laser_scan_msg.angle_increment = (laser_scan_msg.angle_max - laser_scan_msg.angle_min) / (self.robot["laser"]["count"] - 1)  # Angular distance between measurements
         laser_scan_msg.time_increment = 0.04  # Time between measurements in seconds (any value)
         laser_scan_msg.scan_time = float(self.robot["laser"]["rate"])  # Time to complete a full scan in seconds
         laser_scan_msg.range_min = self.robot["laser"]["range_min"]  # Minimum valid range in meters
