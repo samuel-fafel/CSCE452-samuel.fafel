@@ -1,0 +1,25 @@
+[1.571s] Invoking command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/src/project4': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project4 build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/install.log --single-version-externally-managed
+[2.037s] running egg_info
+[2.038s] writing ../../build/project4/project4.egg-info/PKG-INFO
+[2.038s] writing dependency_links to ../../build/project4/project4.egg-info/dependency_links.txt
+[2.038s] writing entry points to ../../build/project4/project4.egg-info/entry_points.txt
+[2.038s] writing requirements to ../../build/project4/project4.egg-info/requires.txt
+[2.039s] writing top-level names to ../../build/project4/project4.egg-info/top_level.txt
+[2.041s] reading manifest file '../../build/project4/project4.egg-info/SOURCES.txt'
+[2.042s] writing manifest file '../../build/project4/project4.egg-info/SOURCES.txt'
+[2.042s] running build
+[2.042s] running build_py
+[2.042s] running install
+[2.043s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[2.043s]   warnings.warn(
+[2.043s] running install_lib
+[2.046s] running install_data
+[2.046s] running install_egg_info
+[2.050s] removing '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages/project4-0.0.0-py3.10.egg-info' (and everything under it)
+[2.050s] Copying ../../build/project4/project4.egg-info to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages/project4-0.0.0-py3.10.egg-info
+[2.051s] running install_scripts
+[2.088s] Installing robot_state_publisher script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/project4
+[2.088s] Installing simulator script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/project4
+[2.089s] Installing velocity_translator script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/project4
+[2.089s] writing list of installed files to '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/install.log'
+[2.110s] Invoked command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/src/project4' returned '0': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project4 build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/install.log --single-version-externally-managed

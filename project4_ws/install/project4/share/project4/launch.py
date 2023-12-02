@@ -1,9 +1,10 @@
-from launch import LaunchDescription
+from launch import LaunchDescription, actions
 from launch_ros.actions import *
 from launch.substitutions import *
 from launch.actions import *
 from launch.event_handlers import *
 from launch.events import *
+from launch.actions import TimerAction
 
 # The load_disc_robot method reads a file that describes a disc-shaped robot
 # and returns a dictionary describing the properties of that robot.
@@ -71,16 +72,19 @@ def generate_launch_description():
     bag_in = DeclareLaunchArgument('bag_in')
     bag_out = DeclareLaunchArgument('bag_out')
 
+    # Bag Play with Delay
     bag_play = ExecuteProcess(
-            cmd=['ros2', 'bag', 'play', LaunchConfiguration('bag_in')],
-            output='screen',
-            shell=True
-        )
-    
+                cmd=['sleep', '2', '&&', 'ros2', 'bag', 'play', LaunchConfiguration('bag_in')],
+                output='screen',
+                shell=True
+            )
+  
     bag_record = ExecuteProcess(
             #Put desired topics after LaunchConfiguration (add any I may have missed)
             cmd=['ros2', 'bag', 'record', '-o', LaunchConfiguration('bag_out'), 
                 '/robot_description', 
+                '/map',
+                '/map_updates'
                 '/robot_state_publisher', 
                 '/cmd_vel',
                 '/vl', 
@@ -116,8 +120,8 @@ def generate_launch_description():
             parameters=[{'robot_description' : robot_urdf}]
         ),
         bag_in,
-        #bag_out,
+        bag_out,
         bag_play,
-        #bag_record,
+        bag_record,
         RegisterEventHandler(event_handler)
     ])
