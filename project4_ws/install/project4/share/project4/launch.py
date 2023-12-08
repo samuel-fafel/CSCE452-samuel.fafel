@@ -69,15 +69,15 @@ def generate_launch_description():
     robot_urdf = robot['urdf']
 
     #Must put full path in bag_in arg
-    bag_in = DeclareLaunchArgument('bag_in')
+    # bag_in = DeclareLaunchArgument('bag_in')
     bag_out = DeclareLaunchArgument('bag_out')
 
     # Bag Play with Delay
-    bag_play = ExecuteProcess(
-                cmd=['sleep', '2', '&&', 'ros2', 'bag', 'play', LaunchConfiguration('bag_in')],
-                output='screen',
-                shell=True
-            )
+    # bag_play = ExecuteProcess(
+    #            cmd=['sleep', '2', '&&', 'ros2', 'bag', 'play', LaunchConfiguration('bag_in')],
+    #            output='screen',
+    #            shell=True
+    #        )
   
     bag_record = ExecuteProcess(
             #Put desired topics after LaunchConfiguration (add any I may have missed)
@@ -97,7 +97,7 @@ def generate_launch_description():
             shell=True
         ) 
 
-    event_handler = OnProcessExit(target_action = bag_play, on_exit = [EmitEvent(event=Shutdown())])
+    #event_handler = OnProcessExit(target_action = bag_play, on_exit = [EmitEvent(event=Shutdown())])
 
     return LaunchDescription([
         Node(
@@ -119,9 +119,15 @@ def generate_launch_description():
             output='screen',
             parameters=[{'robot_description' : robot_urdf}]
         ),
-        bag_in,
+        Node(
+            package='project4',
+            executable='navigation_controller',
+            name='navigation_controller',
+            output='screen',
+        ),
+        #bag_in,
         bag_out,
-        bag_play,
+        #bag_play,
         bag_record,
-        RegisterEventHandler(event_handler)
+        #RegisterEventHandler(event_handler)
     ])

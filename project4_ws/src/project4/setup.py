@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'simulator = project4.simulator:main',
             'velocity_translator = project4.velocity_translator:main',
+            'navigation_controller = project4.navigation_controller:main',
             'robot_state_publisher = robot_state_publisher:main'
         ],
     },

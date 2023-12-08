@@ -7,7 +7,6 @@ import numpy as np
 from project4.disc_robot import *
 
 class VelocityTranslator(Node):
-
     def __init__(self):
         super().__init__('velocity_translator')
         self.model = 'ideal.robot'

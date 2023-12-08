@@ -11,6 +11,7 @@ setup.py
 project4/__init__.py
 project4/disc_robot.py
 project4/load_world.py
+project4/navigation_controller.py
 project4/simulator.py
 project4/velocity_translator.py
 resource/project4

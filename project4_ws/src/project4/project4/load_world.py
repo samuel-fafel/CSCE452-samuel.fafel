@@ -35,6 +35,23 @@ class World:
                     row.append(0)
             self.grid_2d.append(row)
         return occupancy_grid
+    
+    def find_obstacles(self, resolution):
+        obstacles = []
+        rows = self.raw_map
+
+        for y, row in enumerate(rows):
+            for x, cell in enumerate(row):
+                if cell == '#':
+                    # Calculate the world coordinates of the obstacle's corners
+                    top_left = (x * resolution, (len(rows) - y) * resolution)
+                    top_right = ((x + 1) * resolution, (len(rows) - y) * resolution)
+                    bottom_left = (x * resolution, (len(rows) - y - 1) * resolution)
+                    bottom_right = ((x + 1) * resolution, (len(rows) - y - 1) * resolution)
+
+                    obstacles.append([top_left, top_right, bottom_right, bottom_left])
+
+        return obstacles
 
     def get_resolution(self):
         return self.resolution
@@ -50,6 +67,9 @@ class World:
     
     def get_grid_2d(self):
         return self.grid_2d
+
+    def get_obstacles(self):
+        return self.find_obstacles(self.resolution)
 
 if __name__ == '__main__':
     world = World('brick.world')

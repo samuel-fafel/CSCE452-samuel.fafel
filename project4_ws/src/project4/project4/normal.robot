@@ -58,3 +58,4 @@ laser:
     # has some probability, given below, to simply fail completely.  These
     # measurements should show up as NaN in the published scans.
     fail_probability: 0.1
+

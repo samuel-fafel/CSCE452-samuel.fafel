@@ -45,8 +45,8 @@ def bresenham_line(x0, y0, x1, y1, resolution):
     :param resolution: The resolution of the grid
     """
     # Convert world coordinates to grid coordinates
-    x0, y0 = int(x0 / resolution), int(y0 / resolution)
-    x1, y1 = int(x1 / resolution), int(y1 / resolution)
+    x0, y0 = floor(x0 / resolution), floor(y0 / resolution)
+    x1, y1 = floor(x1 / resolution), floor(y1 / resolution)
 
     points = []
     dx = abs(x1 - x0)
@@ -75,9 +75,9 @@ class Simulator(Node):
         # ------- Initialize Parameters -------
         super().__init__('simulator')
         self.model = 'ideal.robot'
-        worlds = ('brick.world', 'pillars.world', 'open.world', 'ell.world', 'custom.world')
-        self.world = 'ell.world'
-        #self.world = worlds[random.randint(0,4)]
+        worlds = ('windy.world', 'cave.world', 'donut.world', 'snake.world')
+        #self.world = 'donut.world'
+        self.world = worlds[random.randint(0,3)]
 
         # Parse Robot Parameters
         self.robot_model = self.declare_parameter('robot', self.model).value
@@ -298,7 +298,7 @@ class Simulator(Node):
                 distance = sqrt((current_point[0] - self.x)**2 + (current_point[1] - self.y)**2)
                 return distance  # Return the distance to the first occupied point
 
-        return self.robot_radius * 3  # If no obstacle is found, return max range
+        return self.robot_radius  # If no obstacle is found, return max range
 
     def is_occupied(self, x, y):
         grid_x = floor(x / self.resolution)
