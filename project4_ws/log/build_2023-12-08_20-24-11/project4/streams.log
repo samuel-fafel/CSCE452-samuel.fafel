@@ -1,0 +1,29 @@
+[1.418s] Invoking command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/src/project4': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project4 build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/install.log --single-version-externally-managed
+[1.846s] running egg_info
+[1.847s] writing ../../build/project4/project4.egg-info/PKG-INFO
+[1.847s] writing dependency_links to ../../build/project4/project4.egg-info/dependency_links.txt
+[1.848s] writing entry points to ../../build/project4/project4.egg-info/entry_points.txt
+[1.848s] writing requirements to ../../build/project4/project4.egg-info/requires.txt
+[1.848s] writing top-level names to ../../build/project4/project4.egg-info/top_level.txt
+[1.850s] reading manifest file '../../build/project4/project4.egg-info/SOURCES.txt'
+[1.851s] writing manifest file '../../build/project4/project4.egg-info/SOURCES.txt'
+[1.851s] running build
+[1.851s] running build_py
+[1.852s] copying project4/navigation_controller.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build/lib/project4
+[1.852s] running install
+[1.852s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.853s]   warnings.warn(
+[1.853s] running install_lib
+[1.853s] copying /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build/lib/project4/navigation_controller.py -> /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages/project4
+[1.856s] byte-compiling /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages/project4/navigation_controller.py to navigation_controller.cpython-310.pyc
+[1.857s] running install_data
+[1.857s] running install_egg_info
+[1.860s] removing '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages/project4-0.0.0-py3.10.egg-info' (and everything under it)
+[1.861s] Copying ../../build/project4/project4.egg-info to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages/project4-0.0.0-py3.10.egg-info
+[1.861s] running install_scripts
+[1.898s] Installing navigation_controller script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/project4
+[1.898s] Installing robot_state_publisher script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/project4
+[1.898s] Installing simulator script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/project4
+[1.898s] Installing velocity_translator script to /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/project4
+[1.898s] writing list of installed files to '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/install.log'
+[1.918s] Invoked command in '/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/src/project4' returned '0': PYTHONPATH=/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/prefix_override:/home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/install/project4/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/project4 build --build-base /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/build install --record /home/samuel/ros2_humble/CSCE452-samuel.fafel/project4_ws/build/project4/install.log --single-version-externally-managed

@@ -74,10 +74,10 @@ class Simulator(Node):
     def __init__(self):
         # ------- Initialize Parameters -------
         super().__init__('simulator')
-        self.model = 'ideal.robot'
+        self.model = 'normal.robot'
         worlds = ('windy.world', 'cave.world', 'donut.world', 'snake.world')
-        #self.world = 'donut.world'
-        self.world = worlds[random.randint(0,3)]
+        self.world = 'donut.world'
+        #self.world = worlds[random.randint(0,3)]
 
         # Parse Robot Parameters
         self.robot_model = self.declare_parameter('robot', self.model).value
@@ -104,6 +104,8 @@ class Simulator(Node):
         self.dimensions = self.world.get_dimensions()
         self.occupancy_grid = self.world.get_occupancy_grid()
         self.grid2d = self.world.get_grid_2d()
+        self.goal_resolution = self.world.get_goal_resolution()
+        self.resolution_translation = self.world.get_resolution_translation()
 
         # Set Inital Pose
         self.x = self.initial_pose[0]
@@ -137,8 +139,8 @@ class Simulator(Node):
         # ------- Timers -------
 
         # Publish Map
-        #self.create_timer(0.1, self.publish_map)
-        self.publish_map()
+        self.create_timer(1, self.publish_map)
+        #self.publish_map()
 
         # Laser Scan
         self.create_timer(self.laser_rate, self.laserscan)
@@ -237,8 +239,8 @@ class Simulator(Node):
     def get_obstacle_corners(self): # Function to convert the array into a list of obstacle corner points
         # List to hold the coordinates of corners
         corners = []
-        cols = self.dimensions[0]
-        rows = self.dimensions[1]
+        rows = len(self.grid2d)
+        cols = len(self.grid2d[0]) if self.grid2d else 0
         
         # Iterate through the array to find obstacles
         for i in range(rows):
@@ -246,10 +248,10 @@ class Simulator(Node):
                 # Check if we have an obstacle
                 if self.grid2d[i][j] == 100:
                     # Add the coordinates of the corners of the obstacle cell
-                    corners.append((round(j * self.resolution, 2), round(i * self.resolution, 2)))  # Bottom Left Corner
-                    corners.append((round((j + 1) * self.resolution, 2), round(i * self.resolution,2)))  # Bottom Right Corner
-                    corners.append((round(j * self.resolution,2), round((i + 1) * self.resolution,2)))  # Top Left Corner
-                    corners.append((round((j + 1) * self.resolution,2), round((i + 1) * self.resolution,2)))  # Top Right Corner
+                    corners.append((round(j * self.goal_resolution, 2), round(i * self.goal_resolution, 2)))  # Bottom Left Corner
+                    corners.append((round((j + 1) * self.goal_resolution, 2), round(i * self.goal_resolution,2)))  # Bottom Right Corner
+                    corners.append((round(j * self.goal_resolution,2), round((i + 1) * self.goal_resolution,2)))  # Top Left Corner
+                    corners.append((round((j + 1) * self.goal_resolution,2), round((i + 1) * self.goal_resolution,2)))  # Top Right Corner
         
         # Remove duplicates by converting the list to a set, then back to a list
         unique_corners = list(set(corners))
@@ -292,7 +294,7 @@ class Simulator(Node):
         ray_end_y = self.y + self.laser_range_max * sin(angle + self.theta)
 
         # Iterate over points along the ray
-        for current_point in bresenham_line(self.x, self.y, ray_end_x, ray_end_y, self.resolution):
+        for current_point in bresenham_line(self.x, self.y, ray_end_x, ray_end_y, self.goal_resolution):
             if self.is_occupied(*current_point):
                 # Calculate the distance from the robot to this point
                 distance = sqrt((current_point[0] - self.x)**2 + (current_point[1] - self.y)**2)
@@ -301,8 +303,8 @@ class Simulator(Node):
         return self.robot_radius  # If no obstacle is found, return max range
 
     def is_occupied(self, x, y):
-        grid_x = floor(x / self.resolution)
-        grid_y = floor(y / self.resolution)
+        grid_x = floor(x / self.goal_resolution)
+        grid_y = floor(y / self.goal_resolution)
         if self.grid2d[grid_y][grid_x] == 100:
             return True
         return False

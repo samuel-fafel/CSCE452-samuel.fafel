@@ -9,7 +9,7 @@ from project4.disc_robot import *
 class VelocityTranslator(Node):
     def __init__(self):
         super().__init__('velocity_translator')
-        self.model = 'ideal.robot'
+        self.model = 'normal.robot'
 
         self.robot_model = self.declare_parameter('robot', self.model).value
         self.cmd_vel_subscription = self.create_subscription(Twist,'/cmd_vel',self.cmd_vel_callback,10)
